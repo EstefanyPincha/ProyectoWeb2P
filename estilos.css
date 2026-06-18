@@ -1,0 +1,1521 @@
+/*
+   ESPE EMPRENDE – Estilos Principales
+   Paleta institucional ESPE:
+     - Verdes como color base principal
+     - Amarillo y rojo como acentos secundarios
+     - Azul únicamente para gráficas del dashboard
+*/
+
+
+/* Variables globales de diseño */
+:root {
+  /* Colores institucionales ESPE */
+  --verde-espe: #00783F;
+  --verde-espe-oscuro: #005A2F;
+  --rojo-espe: #D32F2F;
+  --amarillo-espe: #F2C300;
+  --azul-espe: #003A70;
+  --negro: #000000;
+  --blanco: #FFFFFF;
+
+  /* Tonos suaves de apoyo */
+  --verde-100: #E5F3EC;
+  --amarillo-100: #FFF5CC;
+  --verde-500: var(--verde-espe);
+  --rojo-500: var(--rojo-espe);
+  --rojo-100: #FBE4E4;
+
+  /* Escala de grises */
+  --gris-900: #111111;
+  --gris-800: #242424;
+  --gris-700: #3D3D3D;
+  --gris-600: #5C5C5C;
+  --gris-500: #737373;
+  --gris-400: #9A9A9A;
+  --gris-200: #E2E2E2;
+  --gris-100: #F2F2F2;
+  --gris-50:  #FAFAFA;
+
+  /* Sombras reutilizables */
+  --sombra-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+  --sombra-md: 0 4px 16px rgba(0,0,0,.10);
+  --sombra-lg: 0 8px 32px rgba(0,0,0,.14);
+  --sombra-xl: 0 20px 60px rgba(0,0,0,.18);
+
+  /* Radios de borde */
+  --radio-sm: 6px;
+  --radio-md: 12px;
+  --radio-lg: 20px;
+  --radio-xl: 28px;
+
+  /* Transición estándar suave */
+  --transicion: all .22s cubic-bezier(.4,0,.2,1);
+
+  /* Tipografías */
+  --fuente-sans: 'Inter', system-ui, sans-serif;
+  --fuente-display: 'Sora', 'Inter', sans-serif;
+
+  /* Altura de la barra de navegación */
+  --alto-nav: 68px;
+}
+
+
+/* Reset y estilos base */
+*, *::before, *::after {
+  box-sizing: border-box; /* Incluye borde y padding en el tamaño total */
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth; /* Desplazamiento suave al navegar por anclas */
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--fuente-sans);
+  background: var(--blanco);
+  color: var(--gris-800);
+  line-height: 1.6;
+  overflow-x: hidden; /* Evita desbordamiento horizontal */
+}
+
+a   { color: inherit; text-decoration: none; cursor: pointer; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+
+/* Campos de formulario heredan la fuente del cuerpo */
+input, textarea, select {
+  font-family: inherit;
+  font-size: .9375rem;
+  outline: none;
+}
+
+ul { list-style: none; }
+
+
+/* Barra de desplazamiento personalizada */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--gris-100); }
+::-webkit-scrollbar-thumb { background: var(--verde-espe); border-radius: 3px; }
+
+
+/* BARRA DE NAVEGACIÓN */
+
+/* Barra fija en la parte superior de la página */
+.barra-nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000; /* Siempre encima del contenido */
+  height: var(--alto-nav);
+  background: rgba(255,255,255,.95);
+  backdrop-filter: blur(12px); /* Efecto vidrio esmerilado */
+  border-bottom: 1px solid var(--gris-200);
+  transition: var(--transicion);
+}
+
+/* Sombra al hacer scroll */
+.barra-nav.con-sombra {
+  box-shadow: var(--sombra-md);
+}
+
+/* Contenedor centrado de la barra de navegación */
+.contenedor-nav {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+/* Agrupación de logo y texto de marca */
+.marca-nav {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-shrink: 0; /* Evita que se comprima */
+}
+
+/* Contenedor del logo con sombra verde */
+.logo-marca {
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 8px rgba(0,120,63,.25));
+}
+
+/* Bloque de texto de la marca (título + subtítulo) */
+.texto-marca {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.titulo-marca {
+  font-family: var(--fuente-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--verde-espe);
+}
+
+.subtitulo-marca {
+  font-size: .72rem;
+  color: var(--gris-400);
+  font-weight: 500;
+  letter-spacing: .02em;
+}
+
+/* Contenedor de los enlaces del menú principal */
+.enlaces-nav {
+  display: flex;
+  align-items: center;
+  gap: .25rem;
+}
+
+/* Estilo base de cada enlace de navegación */
+.enlace-nav {
+  padding: .5rem .9rem;
+  border-radius: var(--radio-sm);
+  font-size: .88rem;
+  font-weight: 500;
+  color: var(--gris-600);
+  transition: var(--transicion);
+  white-space: nowrap;
+}
+
+.enlace-nav:hover { background: var(--verde-100); color: var(--verde-espe); }
+
+/* Estado activo: fondo verde lleno */
+.enlace-nav.activo {
+  background: var(--verde-espe);
+  color: var(--blanco);
+  font-weight: 600;
+}
+
+/* Botón hamburguesa (visible solo en móvil) */
+.boton-menu {
+  display: none;
+  flex-direction: column;
+  gap: 5px;
+  padding: 6px;
+  border-radius: var(--radio-sm);
+  border: 1px solid var(--gris-200);
+}
+
+/* Líneas del botón hamburguesa */
+.boton-menu span {
+  display: block;
+  width: 22px; height: 2px;
+  background: var(--gris-700);
+  border-radius: 2px;
+  transition: var(--transicion);
+}
+
+
+/* SECCIONES – Base */
+
+/* Todas las secciones están ocultas por defecto */
+.seccion {
+  display: none;
+  min-height: 100vh;
+  padding-top: var(--alto-nav); /* Compensa la barra de navegación fija */
+}
+
+/* Solo la sección activa se muestra */
+.seccion.activo { display: block; }
+
+/* Contenedor centrado con ancho máximo */
+.contenedor {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem;
+}
+
+/* Encabezado centrado de cada sección */
+.encabezado-seccion {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+/* Pequeña etiqueta superior con fondo verde claro */
+.subtitulo-eyebrow {
+  display: inline-block;
+  font-size: .78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: var(--verde-espe);
+  background: var(--verde-100);
+  padding: .3rem .9rem;
+  border-radius: 99px;
+  margin-bottom: .75rem;
+}
+
+/* Título principal de cada sección */
+.titulo-seccion {
+  font-family: var(--fuente-display);
+  font-size: clamp(1.6rem, 3vw, 2.4rem); /* Tamaño fluido */
+  font-weight: 800;
+  color: var(--gris-900);
+  line-height: 1.2;
+  margin-bottom: .75rem;
+}
+
+/* Párrafo descriptivo debajo del título */
+.descripcion-seccion {
+  font-size: 1.05rem;
+  color: var(--gris-600);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+
+/* BOTONES */
+
+/* Estilo base compartido por todos los botones */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .7rem 1.6rem;
+  border-radius: var(--radio-md);
+  font-size: .9375rem;
+  font-weight: 600;
+  transition: var(--transicion);
+  white-space: nowrap;
+  border: 2px solid transparent;
+}
+
+/* Botón primario: fondo verde sólido */
+.btn-primario {
+  background: var(--verde-espe);
+  color: var(--blanco);
+  border-color: var(--verde-espe);
+}
+.btn-primario:hover {
+  background: var(--verde-espe-oscuro);
+  border-color: var(--verde-espe-oscuro);
+  box-shadow: 0 4px 20px rgba(0,120,63,.35);
+  transform: translateY(-1px); /* Efecto de elevación */
+}
+
+/* Botón de contorno: borde verde sin relleno */
+.btn-contorno {
+  background: transparent;
+  color: var(--verde-espe);
+  border-color: var(--verde-espe);
+}
+.btn-contorno:hover {
+  background: var(--verde-espe);
+  color: var(--blanco);
+  transform: translateY(-1px);
+}
+
+/* Botón fantasma: fondo gris neutro */
+.btn-fantasma {
+  background: var(--gris-100);
+  color: var(--gris-700);
+  border-color: var(--gris-200);
+}
+.btn-fantasma:hover { background: var(--gris-200); }
+
+/* Botón de peligro: fondo rojo para acciones destructivas */
+.btn-peligro {
+  background: var(--rojo-500);
+  color: var(--blanco);
+  border-color: var(--rojo-500);
+}
+.btn-peligro:hover {
+  background: var(--rojo-espe);
+  transform: translateY(-1px);
+}
+
+/* Botón de ancho completo */
+.btn-completo { width: 100%; justify-content: center; }
+
+
+/* HERO – SECCIÓN INICIO */
+
+.seccion-inicio { background: var(--blanco); }
+
+/* Bloque hero: posición relativa para imagen de fondo absoluta */
+.hero {
+  display: block;
+  width: 100%;
+  max-width: none;
+  margin: 0 auto;
+  padding: 4.75rem max(1.5rem, calc((100vw - 1280px) / 2 + 1.5rem)) 3.75rem;
+  position: relative;
+  overflow: hidden;
+  min-height: 560px;
+}
+
+/* Contenido textual superpuesto sobre la imagen */
+.contenido-hero {
+  position: relative;
+  z-index: 2; /* Encima de la imagen de fondo */
+  max-width: 650px;
+}
+
+/* Imagen de fondo del hero (posición absoluta detrás del texto) */
+.imagen-hero {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--verde-100);
+  pointer-events: none; /* No capta eventos de ratón */
+}
+
+/* Capa de degradado sobre la imagen para legibilidad del texto */
+.imagen-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(90deg, rgba(255,255,255,.92) 0%, rgba(255,255,255,.78) 42%, rgba(255,255,255,.34) 72%, rgba(255,255,255,.14) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,120,63,.10));
+}
+
+/* Imagen del hero con escala horizontal para cubrir bien el área */
+.imagen-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: .9;
+  filter: saturate(.92) contrast(1);
+  transform: scaleX(1.16);
+  transform-origin: center;
+}
+
+/* Insignia de año encima del título */
+.insignia-hero {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  background: linear-gradient(135deg, var(--amarillo-espe), var(--amarillo-100));
+  color: var(--negro);
+  font-size: .8rem;
+  font-weight: 700;
+  padding: .35rem 1rem;
+  border-radius: 99px;
+  margin-bottom: 1.25rem;
+  letter-spacing: .02em;
+}
+
+/* Título principal del hero con tamaño fluido */
+.titulo-hero {
+  font-family: var(--fuente-display);
+  font-size: clamp(2rem, 4.5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--gris-900);
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+/* Texto con degradado verde para el slogan */
+.texto-degradado {
+  background: linear-gradient(135deg, var(--verde-espe), var(--verde-espe-oscuro));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Párrafo descriptivo del hero */
+.descripcion-hero {
+  font-size: 1.1rem;
+  color: var(--gris-600);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+  max-width: 520px;
+}
+
+/* Fila de botones de acción */
+.acciones-hero {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 2.5rem;
+}
+
+/* Bloque de estadísticas resumen en el hero */
+.estadisticas-hero {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  background: var(--gris-50);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-lg);
+  width: fit-content;
+}
+
+.elemento-estadistica { text-align: center; }
+
+/* Número grande en color verde */
+.numero-estadistica {
+  display: block;
+  font-family: var(--fuente-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--verde-espe);
+}
+
+.etiqueta-estadistica {
+  font-size: .75rem;
+  color: var(--gris-500);
+  font-weight: 500;
+}
+
+/* Línea divisoria vertical entre estadísticas */
+.divisor-estadistica {
+  width: 1px;
+  height: 36px;
+  background: var(--gris-200);
+}
+
+
+/* ECOSISTEMA – SECCIÓN DE CARACTERÍSTICAS */
+
+.ecosistema {
+  background: var(--blanco);
+  border-top: 1px solid var(--gris-200);
+}
+
+/* Cuadrícula de tarjetas del ecosistema */
+.cuadricula-ecosistema {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Tarjeta individual del ecosistema */
+.tarjeta-eco {
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-lg);
+  padding: 1.75rem;
+  text-align: center;
+  transition: var(--transicion);
+}
+
+.tarjeta-eco:hover {
+  border-color: var(--verde-espe);
+  box-shadow: var(--sombra-md);
+  transform: translateY(-4px); /* Elevación al pasar el cursor */
+}
+
+/* Ícono centrado de cada tarjeta */
+.icono-eco {
+  margin: 0 auto 1rem;
+}
+
+.tarjeta-eco h3 {
+  font-family: var(--fuente-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--gris-900);
+  margin-bottom: .5rem;
+}
+
+.tarjeta-eco p { font-size: .875rem; color: var(--gris-600); line-height: 1.6; }
+
+
+/* Chips de categoría */
+
+/* Cuadrícula flexible de chips */
+.cuadricula-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  justify-content: center;
+}
+
+/* Chip individual de categoría */
+.chip-categoria {
+  display: inline-flex;
+  align-items: center;
+  gap: .75rem;
+  padding: .95rem 1.35rem;
+  background: var(--blanco);
+  border: 1.5px solid var(--gris-200);
+  border-radius: var(--radio-sm);
+  font-size: .95rem;
+  font-weight: 600;
+  color: var(--gris-900);
+  cursor: pointer;
+  transition: var(--transicion);
+}
+
+.chip-categoria:hover {
+  border-color: var(--verde-espe);
+  color: var(--gris-900);
+  background: var(--blanco);
+  transform: translateY(-2px);
+}
+
+/* Altura mínima garantizada para chips con ícono */
+.etiqueta-audiencia {
+  min-height: 58px;
+}
+
+/* Contenedor cuadrado del ícono con color verde */
+.icono-etiqueta {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--verde-espe);
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.chip-categoria .icono-etiqueta { color: var(--verde-espe); }
+.chip-categoria:hover .icono-etiqueta { color: var(--verde-espe-oscuro); }
+
+
+/* CATÁLOGO DE EMPRENDIMIENTOS */
+
+.seccion-emprendimientos { background: var(--blanco); }
+
+/* Fila de controles de búsqueda y filtrado */
+.controles-catalogo {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+/* Caja de búsqueda con ícono interno */
+.caja-busqueda {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Ícono de lupa posicionado dentro del campo */
+.icono-busqueda {
+  position: absolute;
+  left: .85rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px; height: 18px;
+  color: var(--gris-400);
+  pointer-events: none;
+}
+
+/* Campo de texto de búsqueda */
+.caja-busqueda input {
+  width: 100%;
+  padding: .65rem 1rem .65rem 2.5rem;
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-md);
+  background: var(--blanco);
+  color: var(--gris-800);
+  transition: var(--transicion);
+}
+
+.caja-busqueda input:focus {
+  border-color: var(--verde-espe);
+  box-shadow: 0 0 0 3px rgba(0,58,112,.15);
+}
+
+/* Selectores de filtro */
+.selector-filtro {
+  padding: .65rem 1rem;
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-md);
+  background: var(--blanco);
+  color: var(--gris-700);
+  font-size: .875rem;
+  cursor: pointer;
+  transition: var(--transicion);
+  min-width: 160px;
+}
+
+.selector-filtro:focus {
+  border-color: var(--verde-espe);
+  box-shadow: 0 0 0 3px rgba(0,58,112,.15);
+}
+
+
+/* Cuadrícula de tarjetas */
+.cuadricula-tarjetas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Tarjeta individual de emprendimiento */
+.tarjeta-emp {
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-lg);
+  overflow: hidden;
+  transition: var(--transicion);
+  display: flex;
+  flex-direction: column;
+  animation: subirTarjeta .35s ease forwards; /* Animación de entrada */
+}
+
+/* Animación de entrada de las tarjetas */
+@keyframes subirTarjeta {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.tarjeta-emp:hover {
+  box-shadow: var(--sombra-lg);
+  transform: translateY(-6px);
+  border-color: var(--verde-espe);
+}
+
+/* Área de imagen de la tarjeta */
+.imagen-tarjeta {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: var(--verde-100);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--verde-espe);
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* Imagen real dentro del área de imagen */
+.imagen-tarjeta img {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* Ícono de categoría cuando no hay imagen */
+.imagen-tarjeta .icono-etiqueta {
+  width: 54px;
+  height: 54px;
+  font-size: 1.8rem;
+}
+
+/* Cuerpo de la tarjeta con información */
+.cuerpo-tarjeta {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* Fila de badges (categoría + estado) */
+.meta-tarjeta {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  margin-bottom: .75rem;
+}
+
+/* Badge de categoría */
+.badge-tarjeta {
+  font-size: .7rem;
+  font-weight: 700;
+  padding: .2rem .6rem;
+  border-radius: 99px;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+}
+
+/* Colores de badge por categoría */
+.badge-Tecnología  { background: var(--verde-100);    color: var(--verde-espe-oscuro); }
+.badge-Alimentos   { background: var(--amarillo-100); color: var(--negro); }
+.badge-Servicios   { background: var(--amarillo-100); color: var(--verde-espe-oscuro); }
+.badge-Educación   { background: var(--amarillo-100); color: var(--verde-espe-oscuro); }
+.badge-Ambiente    { background: var(--verde-100);    color: var(--verde-espe); }
+.badge-Artesanías  { background: var(--amarillo-100); color: var(--rojo-espe); }
+.badge-Salud       { background: var(--rojo-100);     color: var(--rojo-espe); }
+.badge-Otro        { background: var(--gris-100);     color: var(--negro); }
+
+/* Pastilla de estado del emprendimiento */
+.pastilla-estado {
+  font-size: .68rem;
+  font-weight: 600;
+  padding: .15rem .55rem;
+  border-radius: 99px;
+  margin-left: auto;
+  background: transparent;
+  color: var(--gris-500);
+  border: 1px solid var(--gris-200);
+}
+
+/* Título de la tarjeta */
+.titulo-tarjeta {
+  font-family: var(--fuente-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gris-900);
+  margin-bottom: .35rem;
+  line-height: 1.3;
+}
+
+/* Subtítulo con responsable y carrera */
+.subtitulo-tarjeta { font-size: .8rem; color: var(--gris-500); margin-bottom: .6rem; }
+.subtitulo-tarjeta i { color: var(--verde-espe); margin-right: .35rem; }
+
+/* Descripción truncada a 2 líneas */
+.descripcion-tarjeta {
+  font-size: .84rem;
+  color: var(--gris-600);
+  line-height: 1.6;
+  flex: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Pie de tarjeta con ventas y acciones */
+.pie-tarjeta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 1rem;
+  padding-top: .75rem;
+  border-top: 1px solid var(--gris-100);
+}
+
+/* Monto de ventas mensuales */
+.ventas-tarjeta {
+  font-family: var(--fuente-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--verde-500);
+}
+
+/* Etiqueta pequeña debajo del monto */
+.etiqueta-ventas { font-size: .7rem; color: var(--gris-400); display: block; }
+
+/* Contenedor de botones de acción */
+.acciones-tarjeta { display: flex; gap: .4rem; }
+
+/* Botón icónico cuadrado (editar / eliminar) */
+.btn-icono {
+  width: 32px; height: 32px;
+  border-radius: var(--radio-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .875rem;
+  transition: var(--transicion);
+  background: var(--gris-100);
+  color: var(--gris-600);
+}
+
+.btn-icono:hover { background: var(--verde-100); color: var(--verde-espe); }
+.btn-icono.eliminar:hover { background: var(--rojo-100); color: var(--rojo-500); }
+
+/* Estado vacío cuando no hay resultados */
+.estado-vacio {
+  text-align: center;
+  padding: 4rem 1.5rem;
+  grid-column: 1 / -1;
+}
+.icono-vacio { font-size: 2rem; margin: 0 auto 1rem; }
+.estado-vacio h3 { font-size: 1.3rem; font-weight: 700; color: var(--gris-700); margin-bottom: .5rem; }
+.estado-vacio p  { color: var(--gris-500); margin-bottom: 1.5rem; }
+
+
+/* SECCIÓN REGISTRO – FORMULARIO */
+
+.seccion-registro { background: var(--blanco); }
+
+/* Contenedor que centra y limita el ancho del formulario */
+.contenedor-formulario {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* Formulario en cuadrícula de dos columnas */
+.formulario-emp {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-xl);
+  padding: 2.5rem;
+  box-shadow: var(--sombra-md);
+}
+
+/* Grupo de campo individual (label + input + error) */
+.grupo-campo { display: flex; flex-direction: column; gap: .35rem; }
+
+/* Campo que ocupa las dos columnas de la cuadrícula */
+.grupo-campo-completo { grid-column: 1 / -1; }
+
+.grupo-campo label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--gris-700);
+}
+
+/* Asterisco indicador de campo obligatorio */
+.requerido { color: var(--rojo-500); }
+
+/* Campos de entrada del formulario */
+.grupo-campo input,
+.grupo-campo select,
+.grupo-campo textarea {
+  padding: .7rem 1rem;
+  border: 1.5px solid var(--gris-200);
+  border-radius: var(--radio-md);
+  background: var(--gris-50);
+  color: var(--gris-800);
+  transition: var(--transicion);
+  width: 100%;
+}
+
+/* Estado focus con borde verde */
+.grupo-campo input:focus,
+.grupo-campo select:focus,
+.grupo-campo textarea:focus {
+  border-color: var(--verde-espe);
+  background: var(--blanco);
+  box-shadow: 0 0 0 3px rgba(0,58,112,.12);
+}
+
+/* Estado de error con borde rojo */
+.grupo-campo input.error,
+.grupo-campo select.error,
+.grupo-campo textarea.error {
+  border-color: var(--rojo-500);
+  box-shadow: 0 0 0 3px rgba(211,47,47,.10);
+}
+
+/* Texto del mensaje de error debajo del campo */
+.error-campo {
+  font-size: .75rem;
+  color: var(--rojo-500);
+  font-weight: 500;
+  min-height: 1em; /* Reserva espacio aunque esté vacío */
+}
+
+/* Fila de botones al pie del formulario */
+.acciones-formulario {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  padding-top: .5rem;
+  border-top: 1px solid var(--gris-100);
+}
+
+/* Bloque de éxito que reemplaza el formulario tras registro */
+.exito-formulario {
+  text-align: center;
+  padding: 3rem;
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-xl);
+  box-shadow: var(--sombra-md);
+}
+
+.icono-exito { font-size: 2rem; margin: 0 auto 1rem; }
+.exito-formulario h3 { font-size: 1.4rem; font-weight: 700; margin-bottom: .5rem; }
+.exito-formulario p  { color: var(--gris-600); margin-bottom: 1.5rem; }
+.exito-formulario .btn { margin: .25rem; }
+
+
+/* SECCIÓN PANEL (DASHBOARD) */
+
+.seccion-panel { background: var(--blanco); }
+
+/* Tarjetas KPI */
+
+/* Cuadrícula de métricas clave */
+.cuadricula-kpi {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+/* Tarjeta KPI individual */
+.tarjeta-kpi {
+  background: var(--blanco);
+  border-radius: var(--radio-lg);
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  border: 1px solid var(--gris-200);
+  transition: var(--transicion);
+}
+
+.tarjeta-kpi:hover { transform: translateY(-3px); box-shadow: var(--sombra-md); }
+
+.icono-kpi { font-size: 1.35rem; flex-shrink: 0; }
+.info-kpi { display: flex; flex-direction: column; }
+
+/* Valor numérico grande */
+.valor-kpi {
+  font-family: var(--fuente-display);
+  font-size: 1.6rem;
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.etiqueta-kpi { font-size: .75rem; color: var(--gris-500); font-weight: 500; margin-top: .2rem; }
+
+/* Variantes de color por tipo de KPI */
+.kpi-principal .valor-kpi,
+.kpi-principal .icono-kpi { color: var(--verde-espe); }
+.kpi-verde    .valor-kpi,
+.kpi-verde    .icono-kpi  { color: var(--azul-espe); }
+.kpi-amarillo .valor-kpi,
+.kpi-amarillo .icono-kpi  { color: var(--amarillo-espe); }
+.kpi-rojo     .valor-kpi,
+.kpi-rojo     .icono-kpi  { color: var(--rojo-500); }
+
+/* Borde izquierdo de color según tipo */
+.kpi-principal { border-left: 4px solid var(--verde-espe); }
+.kpi-verde     { border-left: 4px solid var(--azul-espe); }
+.kpi-amarillo  { border-left: 4px solid var(--amarillo-espe); }
+.kpi-rojo      { border-left: 4px solid var(--rojo-500); }
+
+
+/* Gráficos de barras */
+
+/* Fila de dos gráficos lado a lado */
+.fila-graficos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+/* Tarjeta contenedora de cada gráfico */
+.tarjeta-grafico {
+  background: var(--blanco);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-lg);
+  padding: 1.5rem;
+}
+
+.titulo-grafico {
+  font-size: .95rem;
+  font-weight: 700;
+  color: var(--gris-800);
+  margin-bottom: 1.25rem;
+}
+
+/* Columna de filas de barras */
+.grafico-barras { display: flex; flex-direction: column; gap: .65rem; }
+
+/* Fila de una barra: etiqueta + barra + número */
+.fila-barra {
+  display: grid;
+  grid-template-columns: 90px 1fr 60px;
+  align-items: center;
+  gap: .75rem;
+}
+
+.etiqueta-barra {
+  font-size: .78rem;
+  color: var(--gris-600);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Pista gris de fondo de la barra */
+.pista-barra {
+  height: 10px;
+  background: var(--gris-100);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+/* Relleno animado de la barra (ancho dinámico desde JS) */
+.relleno-barra {
+  height: 100%;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--verde-espe), var(--azul-espe));
+  transition: width .7s cubic-bezier(.4,0,.2,1);
+  width: 0; /* Comienza en 0 y anima al valor real */
+}
+
+.conteo-barra { font-size: .78rem; font-weight: 700; color: var(--gris-700); text-align: right; }
+
+
+/* Tabla de registros */
+
+/* Contenedor principal de la tabla */
+.tarjeta-tabla {
+  background: var(--blanco);
+  border: 1px solid rgba(17,17,17,.08);
+  border-radius: var(--radio-md);
+  overflow: hidden;
+  box-shadow: 0 12px 34px rgba(17,17,17,.06);
+}
+
+/* Encabezado de la tabla con título y controles */
+.encabezado-tabla {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.35rem 1.5rem;
+  background: var(--blanco);
+  border-bottom: 1px solid rgba(17,17,17,.07);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.encabezado-tabla h3 {
+  font-family: var(--fuente-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--gris-900);
+}
+
+/* Fila de controles de búsqueda y filtro de la tabla */
+.controles-tabla {
+  display: flex;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+
+/* Ajustes de los campos dentro de la tabla */
+.tarjeta-tabla .caja-busqueda input,
+.tarjeta-tabla .selector-filtro {
+  border-color: rgba(17,17,17,.10);
+  background: var(--blanco);
+  border-radius: var(--radio-sm);
+}
+
+/* Contenedor para scroll horizontal en pantallas pequeñas */
+.tabla-responsiva {
+  overflow-x: auto;
+  background: var(--blanco);
+}
+
+/* Tabla de datos sin colapso de bordes */
+.tabla-datos {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: .85rem;
+}
+
+/* Fondo ligeramente gris para encabezados */
+.tabla-datos thead tr { background: #F7F9F8; }
+
+.tabla-datos th {
+  padding: .95rem 1.1rem;
+  text-align: left;
+  font-size: .72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--gris-600);
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(17,17,17,.08);
+}
+
+.tabla-datos td {
+  padding: 1rem 1.1rem;
+  color: var(--gris-700);
+  border-bottom: 1px solid rgba(17,17,17,.06);
+  vertical-align: middle;
+}
+
+/* Efecto hover en filas de la tabla */
+.tabla-datos tbody tr { transition: background .18s ease, box-shadow .18s ease; }
+.tabla-datos tbody tr:hover { background: #F5FAF7; }
+.tabla-datos tbody tr:last-child td { border-bottom: none; } /* Sin borde en última fila */
+
+/* Nombre en negrita */
+.tabla-datos td:nth-child(2) strong { color: var(--gris-900); font-weight: 700; }
+
+/* Mensaje cuando la tabla está vacía */
+.tabla-vacia { text-align: center; padding: 3rem; }
+.tabla-vacia p { color: var(--gris-500); margin-bottom: 1rem; }
+
+/* Celda de código con estilo monoespacio */
+.celda-codigo {
+  font-family: monospace;
+  font-size: .76rem;
+  background: #F4F7F5;
+  border: 1px solid rgba(0,120,63,.12);
+  padding: .28rem .55rem;
+  border-radius: var(--radio-sm);
+  color: var(--verde-espe);
+  font-weight: 600;
+}
+
+/* Celda de ventas en verde */
+.celda-ventas { font-weight: 700; color: var(--verde-500); }
+
+/* Fila de acciones dentro de la tabla */
+.acciones-tabla {
+  display: flex;
+  gap: .4rem;
+  justify-content: flex-end;
+}
+
+/* Botones icónicos dentro de la tabla */
+.tabla-datos .btn-icono {
+  width: 30px; height: 30px;
+  background: transparent;
+  border: 1px solid rgba(17,17,17,.10);
+  color: var(--gris-500);
+}
+.tabla-datos .btn-icono:hover {
+  background: var(--verde-100);
+  border-color: rgba(0,120,63,.22);
+  color: var(--verde-espe);
+}
+.tabla-datos .btn-icono.eliminar:hover {
+  background: var(--rojo-100);
+  border-color: rgba(211,47,47,.18);
+  color: var(--rojo-500);
+}
+
+
+/* SECCIÓN CONTACTO */
+
+.seccion-contacto { background: var(--blanco); }
+
+/* Eyebrow más oscuro para sección de contacto */
+.seccion-contacto .subtitulo-eyebrow {
+  background: #DDEBE3;
+  color: #004525;
+}
+
+/* Disposición de dos columnas: info + formulario */
+.disposicion-contacto {
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Tarjeta de información institucional con fondo verde oscuro */
+.tarjeta-info {
+  background: #004525;
+  color: var(--blanco);
+  border-radius: var(--radio-xl);
+  padding: 2.5rem;
+  height: fit-content;
+}
+
+.tarjeta-info h3 {
+  font-family: var(--fuente-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+/* Lista de ítems de contacto */
+.lista-info { display: flex; flex-direction: column; gap: 1rem; }
+
+.lista-info li {
+  display: flex;
+  align-items: flex-start;
+  gap: .85rem;
+}
+
+/* Ícono de cada ítem de contacto */
+.icono-info {
+  flex-shrink: 0;
+  margin-top: .1rem;
+  color: rgba(255,255,255,.92);
+}
+
+.lista-info strong { display: block; font-size: .85rem; font-weight: 700; }
+.lista-info span   { font-size: .82rem; opacity: .75; }
+
+/* Bloque de horario de atención */
+.horario-atencion {
+  margin-top: 1.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255,255,255,.2);
+}
+
+.horario-atencion h4 { font-size: .9rem; font-weight: 700; margin-bottom: .75rem; opacity: .9; }
+
+/* Cuadrícula de horarios (día / hora) */
+.cuadricula-horario {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: .4rem .75rem;
+  font-size: .82rem;
+  opacity: .8;
+}
+
+/* Contenedor del formulario de contacto */
+.contenedor-formulario-contacto {
+  background: var(--gris-50);
+  border: 1px solid var(--gris-200);
+  border-radius: var(--radio-xl);
+  padding: 2.5rem;
+}
+
+/* Formulario de contacto en columna */
+.formulario-contacto {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+/* Botón de enviar en la sección de contacto */
+.seccion-contacto .btn-primario {
+  background: #004525;
+  border-color: #004525;
+}
+.seccion-contacto .btn-primario:hover {
+  background: #00381E;
+  border-color: #00381E;
+  box-shadow: 0 4px 20px rgba(0,69,37,.28);
+}
+
+
+/* PIE DE PÁGINA */
+
+.pie-pagina {
+  background: var(--gris-900);
+  color: var(--blanco);
+  border-top: 3px solid var(--verde-espe); /* Franja verde institucional */
+}
+
+/* Cuadrícula de columnas del pie de página */
+.cuadricula-pie {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  gap: 2.5rem;
+  padding: 3rem 1.5rem 2rem;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Texto descriptivo en columna de marca */
+.marca-pie .descripcion-pie {
+  font-size: .85rem;
+  color: rgba(255,255,255,.5);
+  line-height: 1.7;
+  margin-top: 1rem;
+}
+
+/* Logo en el pie */
+.marca-pie .logo-marca {
+  width: 64px; height: 64px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.logo-pie {
+  width: 64px; height: 64px;
+  object-fit: contain;
+}
+
+/* Título de columna en amarillo institucional */
+.columna-pie h4 {
+  font-size: .85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--amarillo-espe);
+  margin-bottom: 1rem;
+}
+
+.columna-pie ul { display: flex; flex-direction: column; gap: .5rem; }
+
+.columna-pie li a {
+  font-size: .85rem;
+  color: rgba(255,255,255,.55);
+  transition: var(--transicion);
+  cursor: pointer;
+}
+.columna-pie li a:hover { color: var(--blanco); }
+
+/* Franja inferior del pie con copyright */
+.franja-pie {
+  border-top: 1px solid rgba(255,255,255,.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  max-width: 1280px;
+  margin: 0 auto;
+  font-size: .78rem;
+  color: rgba(255,255,255,.4);
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Insignia de LocalStorage activo */
+.insignia-ls {
+  display: inline-flex;
+  align-items: center;
+  gap: .3rem;
+  background: rgba(242,195,0,.15);
+  color: var(--amarillo-espe);
+  padding: .2rem .55rem;
+  border-radius: 99px;
+  font-weight: 700;
+  font-size: .75rem;
+}
+
+
+/* MODAL DE CONFIRMACIÓN */
+
+/* Capa de fondo oscuro que cubre toda la pantalla */
+.capa-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.5);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(4px); /* Difumina el fondo */
+}
+
+/* Ventana del modal */
+.modal {
+  background: var(--blanco);
+  border-radius: var(--radio-xl);
+  padding: 2.5rem;
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--sombra-xl);
+  animation: escalarEntrada .2s ease; /* Animación de aparición */
+}
+
+/* Animación de escala al abrir el modal */
+@keyframes escalarEntrada {
+  from { opacity: 0; transform: scale(.92); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.icono-modal { font-size: 2rem; margin: 0 auto .75rem; color: var(--rojo-500); }
+.modal h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: .5rem; }
+.modal p  { color: var(--gris-600); margin-bottom: 1.5rem; font-size: .9rem; }
+
+/* Fila de botones del modal */
+.acciones-modal { display: flex; gap: .75rem; justify-content: center; }
+
+
+/* AVISO FLOTANTE (TOAST) */
+
+/* Notificación temporal en esquina inferior derecha */
+.aviso {
+  position: fixed;
+  bottom: 1.5rem;
+  right: 1.5rem;
+  background: var(--gris-900);
+  color: var(--blanco);
+  padding: .8rem 1.4rem;
+  border-radius: var(--radio-md);
+  font-size: .875rem;
+  font-weight: 500;
+  box-shadow: var(--sombra-xl);
+  z-index: 3000;
+  transform: translateY(100px); /* Empieza fuera de pantalla */
+  opacity: 0;
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none; /* No interfiere con clics */
+  max-width: 340px;
+}
+
+/* Estado visible del aviso */
+.aviso.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Variantes de color por tipo de aviso */
+.aviso.exito { background: var(--verde-espe-oscuro); border-left: 4px solid var(--verde-500); }
+.aviso.error { background: var(--rojo-espe);         border-left: 4px solid var(--rojo-500); }
+.aviso.info  { background: var(--verde-espe-oscuro); border-left: 4px solid var(--amarillo-espe); }
+
+
+/* RESPONSIVE – ADAPTACIÓN A PANTALLAS PEQUEÑAS */
+
+/* Tablet / pantallas medianas */
+@media (max-width: 1024px) {
+  .hero { grid-template-columns: 1fr; gap: 2rem; text-align: center; }
+  .imagen-hero { width: 100%; max-width: none; margin: 0; }
+  .imagen-hero img { transform: scaleX(1.1); }
+  .acciones-hero, .estadisticas-hero { justify-content: center; }
+  .cuadricula-pie { grid-template-columns: 1fr 1fr; }
+  .fila-graficos { grid-template-columns: 1fr; }
+  .disposicion-contacto { grid-template-columns: 1fr; }
+  .formulario-emp { grid-template-columns: 1fr; }
+  .grupo-campo-completo { grid-column: 1; }
+}
+
+/* Móvil */
+@media (max-width: 768px) {
+  :root { --alto-nav: 60px; } /* Barra más compacta en móvil */
+
+  /* Menú desplegable vertical en móvil */
+  .enlaces-nav {
+    display: none;
+    position: absolute;
+    top: var(--alto-nav);
+    left: 0; right: 0;
+    background: var(--blanco);
+    border-bottom: 1px solid var(--gris-200);
+    flex-direction: column;
+    padding: 1rem;
+    gap: .25rem;
+    box-shadow: var(--sombra-md);
+  }
+
+  /* Se muestra al activar con el botón hamburguesa */
+  .enlaces-nav.abierto { display: flex; }
+  .boton-menu { display: flex; }
+  .enlace-nav { width: 100%; padding: .65rem 1rem; }
+
+  .hero { padding: 2.5rem 1rem 2rem; }
+  .imagen-hero { max-width: none; border-radius: 0; }
+  .imagen-hero img { transform: scaleX(1.06); }
+  .estadisticas-hero { flex-wrap: wrap; gap: 1rem; }
+  .cuadricula-pie { grid-template-columns: 1fr; gap: 1.5rem; }
+  .cuadricula-kpi { grid-template-columns: 1fr 1fr; }
+  .cuadricula-tarjetas { grid-template-columns: 1fr; }
+  .controles-catalogo { flex-direction: column; }
+  .encabezado-tabla { flex-direction: column; align-items: flex-start; }
+  .formulario-emp { padding: 1.5rem; }
+  .contenedor-formulario-contacto { padding: 1.5rem; }
+  .tarjeta-info { padding: 1.5rem; }
+  .modal { padding: 1.75rem; }
+}
+
+/* Móvil pequeño */
+@media (max-width: 480px) {
+  .cuadricula-kpi { grid-template-columns: 1fr; }
+  .contenedor { padding: 2rem 1rem; }
+  .titulo-hero { font-size: 2rem; }
+}
+
+
+/* ANIMACIONES UTILITARIAS */
+
+/* Animación de opacidad de entrada */
+.fundido-entrada { animation: fundirEntrada .4s ease forwards; }
+
+@keyframes fundirEntrada {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

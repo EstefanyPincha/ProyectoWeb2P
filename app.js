@@ -1,12 +1,18 @@
-/* ============================================================
-   ESPE EMPRENDE – Lógica principal
-   LocalStorage + CRUD completo + Estadísticas + Filtros
-   ============================================================ */
+/*
+   ESPE EMPRENDE – Lógica principal de la aplicación
+   Funcionalidades:
+     - Almacenamiento en LocalStorage
+     - CRUD completo de emprendimientos
+     - Estadísticas y gráficos del panel
+     - Filtros y búsqueda en catálogo y tabla
+     - Formularios con validación
+*/
 
 'use strict';
 
-/* ---------- DATOS INICIALES (demostración) ---------- */
-const SAMPLE_DATA = [
+
+/* DATOS DE EJEMPLO (demostración inicial) Se cargan la primera vez que el usuario abre el portal */
+var DATOS_EJEMPLO = [
   {
     id: 'EMP-001',
     codigo: 'ESPE-2025-001',
@@ -113,573 +119,805 @@ const SAMPLE_DATA = [
   }
 ];
 
-/* ---------- ESTADO GLOBAL ---------- */
-const LS_KEY = 'espe_emprendimientos_v1';
-let emprendimientos = [];
-let deleteTargetId = null;
 
-/* ---------- UTILIDADES ---------- */
-function $(id) {
-    return document.getElementById(id);
+/* ESTADO GLOBAL DE LA APLICACIÓN */
+
+/* Clave usada para guardar y leer datos en LocalStorage */
+var CLAVE_ALMACENAMIENTO = 'espe_emprendimientos_v1';
+
+/* Array principal que contiene todos los emprendimientos activos */
+var listaEmprendimientos = [];
+
+/* ID del emprendimiento que está pendiente de ser eliminado */
+var idPendienteEliminar = null;
+
+
+/* UTILIDADES GENERALES */
+
+/* Atajo para obtener un elemento del DOM por su ID */
+function obtenerElemento(id) {
+  return document.getElementById(id);
 }
 
-function fmt(value) {
-    return new Intl.NumberFormat("es-EC", {
-        style: "currency",
-        currency: "USD",
-        maximumFractionDigits: 0
-    }).format(Number(value) || 0);
+/* Formatea un número como precio en dólares (USD) con formato ecuatoriano */
+function formatearPrecio(valor) {
+  return new Intl.NumberFormat('es-EC', {
+    style: 'currency',
+    currency: 'USD',
+    maximumFractionDigits: 0
+  }).format(Number(valor) || 0);
 }
 
-function uid() {
-    return "EMP-" + Date.now().toString(36).toUpperCase();
+/* Genera un ID único usando la marca de tiempo en base 36 */
+function generarId() {
+  return 'EMP-' + Date.now().toString(36).toUpperCase();
 }
 
-function emojiFor(cat) {
+/* Devuelve el HTML del ícono Font Awesome correspondiente a cada categoría */
+function obtenerIconoCategoria(categoria) {
+  switch (categoria) {
+    case 'Tecnología':  return '<span class="icono-etiqueta"><i class="fa-solid fa-laptop-code"></i></span>';
+    case 'Alimentos':   return '<span class="icono-etiqueta"><i class="fa-solid fa-utensils"></i></span>';
+    case 'Servicios':   return '<span class="icono-etiqueta"><i class="fa-solid fa-screwdriver-wrench"></i></span>';
+    case 'Educación':   return '<span class="icono-etiqueta"><i class="fa-solid fa-book-open"></i></span>';
+    case 'Ambiente':    return '<span class="icono-etiqueta"><i class="fa-solid fa-leaf"></i></span>';
+    case 'Artesanías':  return '<span class="icono-etiqueta"><i class="fa-solid fa-palette"></i></span>';
+    case 'Salud':       return '<span class="icono-etiqueta"><i class="fa-solid fa-heart-pulse"></i></span>';
+    case 'Otro':        return '<span class="icono-etiqueta"><i class="fa-solid fa-lightbulb"></i></span>';
+    default:            return '<span class="icono-etiqueta"><i class="fa-solid fa-location-pin"></i></span>';
+  }
+}
 
-    switch (cat) {
-        case "Tecnología":
-            return "&#x1F4BB;";
+/* Escapa caracteres especiales HTML para prevenir inyección de código */
+function escaparHtml(texto) {
+  if (!texto) return '';
+  return String(texto)
+    .replace(/&/g,  '&amp;')
+    .replace(/</g,  '&lt;')
+    .replace(/>/g,  '&gt;')
+    .replace(/"/g,  '&quot;')
+    .replace(/'/g,  '&#39;');
+}
 
-        case "Alimentos":
-            return "&#x1F34E;";
 
-        case "Servicios":
-            return "&#x1F6E0;&#xFE0F;";
+/* LOCALSTORAGE – Persistencia de datos */
 
-        case "Educación":
-            return "&#x1F4DA;";
+/* Serializa y guarda la lista completa en LocalStorage */
+function guardarEnAlmacenamiento() {
+  localStorage.setItem(CLAVE_ALMACENAMIENTO, JSON.stringify(listaEmprendimientos));
+}
 
-        case "Ambiente":
-            return "&#x1F331;";
+/* Carga los datos desde LocalStorage o inicializa con datos de ejemplo */
+function cargarDesdeAlmacenamiento() {
+  try {
+    var datosGuardados = localStorage.getItem(CLAVE_ALMACENAMIENTO);
 
-        case "Artesanías":
-            return "&#x1F3A8;";
-
-        case "Salud":
-            return "&#x2764;&#xFE0F;";
-
-        case "Otro":
-            return "&#x2728;";
-
-        default:
-            return "&#x1F4CC;";
+    if (datosGuardados !== null) {
+      /* Si ya existen datos guardados, los parsea */
+      listaEmprendimientos = JSON.parse(datosGuardados);
+      sincronizarImagenesEjemplo(); /* Asegura que las imágenes de ejemplo estén presentes */
+    } else {
+      /* Primera visita: carga los datos de demostración */
+      listaEmprendimientos = DATOS_EJEMPLO.slice();
+      guardarEnAlmacenamiento();
     }
+
+  } catch (error) {
+    /* Si hay error de parseo, restaura los datos de ejemplo */
+    listaEmprendimientos = DATOS_EJEMPLO.slice();
+    guardarEnAlmacenamiento();
+  }
 }
 
-/* ---------- LOCALSTORAGE ---------- */
-function saveLS() {
-    localStorage.setItem(LS_KEY, JSON.stringify(emprendimientos));
-}
+/* Sincroniza las imágenes de los datos ejemplo que puedan faltar en registros guardados */
+function sincronizarImagenesEjemplo() {
+  var huboCambios = false;
 
-function loadLS() {
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    var emp = listaEmprendimientos[i];
 
-    try {
-
-        const raw = localStorage.getItem(LS_KEY);
-
-        if (raw != null) {
-            emprendimientos = JSON.parse(raw);
-            syncSampleImages();
-        } else {
-            emprendimientos = SAMPLE_DATA.slice();
-            saveLS();
+    /* Solo actúa si el registro no tiene imagen */
+    if (!emp.imagen) {
+      for (var j = 0; j < DATOS_EJEMPLO.length; j++) {
+        if (DATOS_EJEMPLO[j].id === emp.id) {
+          emp.imagen = DATOS_EJEMPLO[j].imagen;
+          huboCambios = true;
+          break;
         }
-
-    } catch (error) {
-
-        emprendimientos = SAMPLE_DATA.slice();
-        saveLS();
-
+      }
     }
+  }
 
+  /* Persiste solo si se realizaron cambios */
+  if (huboCambios) {
+    guardarEnAlmacenamiento();
+  }
 }
 
-function syncSampleImages() {
-    let changed = false;
 
-    emprendimientos = emprendimientos.map(function(emp) {
-        const sample = SAMPLE_DATA.find(function(item) {
-            return item.id === emp.id;
-        });
+/* AVISO FLOTANTE (TOAST) */
 
-        if (sample && !emp.imagen) {
-            changed = true;
-            return { ...emp, imagen: sample.imagen };
-        }
+/* Temporizador para ocultar el aviso automáticamente */
+var temporizadorAviso;
 
-        return emp;
-    });
+/*
+ * Muestra una notificación temporal en la esquina inferior derecha
+ * @param {string} mensaje - Texto a mostrar
+ * @param {string} tipo    - 'exito' | 'error' | 'info'
+ */
+function mostrarAviso(mensaje, tipo) {
+  if (tipo == null) { tipo = 'exito'; }
 
-    if (changed) {
-        saveLS();
-    }
+  var elementoAviso = obtenerElemento('aviso');
+  elementoAviso.textContent = mensaje;
+  elementoAviso.className = 'aviso visible ' + tipo; /* Aplica clase visible */
+
+  clearTimeout(temporizadorAviso);
+
+  /* Oculta el aviso después de 3.2 segundos */
+  temporizadorAviso = setTimeout(function () {
+    elementoAviso.className = 'aviso';
+  }, 3200);
 }
 
-/* ---------- TOAST ---------- */
-let toastTimer;
 
-function showToast(msg, type) {
+/* NAVEGACIÓN ENTRE SECCIONES */
 
-    if (type == null) {
-        type = "success";
+/*
+ * Activa la sección indicada y desactiva todas las demás.
+ * Actualiza el enlace activo en la barra de navegación.
+ * @param {string} idSeccion - ID de la sección a mostrar
+ */
+function irA(idSeccion) {
+  /* Oculta todas las secciones */
+  var secciones = document.querySelectorAll('.seccion');
+  for (var i = 0; i < secciones.length; i++) {
+    secciones[i].classList.remove('activo');
+  }
+
+  /* Desactiva todos los enlaces de navegación */
+  var enlaces = document.querySelectorAll('.enlace-nav');
+  for (var j = 0; j < enlaces.length; j++) {
+    enlaces[j].classList.remove('activo');
+  }
+
+  /* Muestra la sección solicitada */
+  var seccionDestino = obtenerElemento(idSeccion);
+  if (seccionDestino !== null) {
+    seccionDestino.classList.add('activo');
+  }
+
+  /* Marca el enlace correspondiente como activo */
+  var todosEnlaces = document.querySelectorAll('.enlace-nav');
+  for (var k = 0; k < todosEnlaces.length; k++) {
+    if (todosEnlaces[k].getAttribute('data-seccion') === idSeccion) {
+      todosEnlaces[k].classList.add('activo');
     }
+  }
 
-    let t = document.getElementById("toast");
+  /* Cierra el menú móvil si estaba abierto */
+  obtenerElemento('enlacesNav').classList.remove('abierto');
 
-    t.textContent = msg;
-    t.className = "toast show " + type;
+  /* Vuelve al inicio de la página */
+  window.scrollTo(0, 0);
 
-    clearTimeout(toastTimer);
-
-    toastTimer = setTimeout(function () {
-        t.className = "toast";
-    }, 3200);
-
+  /* Acciones adicionales según la sección de destino */
+  if (idSeccion === 'emprendimientos') {
+    mostrarTarjetas(listaEmprendimientos);
+  }
+  if (idSeccion === 'panel') {
+    mostrarPanel();
+  }
+  if (idSeccion === 'inicio') {
+    actualizarEstadisticasInicio();
+  }
 }
 
-/* ---------- NAVEGACIÓN ---------- */
-
-function goTo(sectionId) {
-
-    let sections = document.querySelectorAll(".section");
-
-    sections.forEach(function(section) {
-        section.classList.remove("active");
-    });
-
-    let links = document.querySelectorAll(".nav-link");
-
-    links.forEach(function(link) {
-        link.classList.remove("active");
-    });
-
-    let sec = document.getElementById(sectionId);
-
-    if (sec != null) {
-        sec.classList.add("active");
-    }
-
-    let navLinks = document.querySelectorAll(".nav-link");
-
-    navLinks.forEach(function(link) {
-
-        if (link.getAttribute("data-section") == sectionId) {
-            link.classList.add("active");
-        }
-
-    });
-
-    document.getElementById("navLinks").classList.remove("open");
-
-    window.scrollTo(0, 0);
-
-    if (sectionId == "emprendimientos") {
-        renderCards(emprendimientos);
-    }
-
-    if (sectionId == "dashboard") {
-        renderDashboard();
-    }
-
-    if (sectionId == "inicio") {
-        updateHeroStats();
-    }
-
+/*
+ * Filtra el catálogo por categoría y navega a la sección de emprendimientos.
+ * Se usa desde los chips de categoría en la sección de inicio.
+ * @param {string} categoria - Nombre de la categoría a filtrar
+ */
+function filtrarYNavegar(categoria) {
+  irA('emprendimientos');
+  obtenerElemento('filtroCatalogo').value = categoria;
+  filtrarTarjetas();
 }
 
-function filterAndGo(categoria) {
 
-    goTo("emprendimientos");
+/* ESTADÍSTICAS DEL INICIO */
 
-    document.getElementById("catalogFilter").value = categoria;
+/* Actualiza los contadores del bloque hero en la sección de inicio */
+function actualizarEstadisticasInicio() {
+  obtenerElemento('totalEmprendimientos').textContent = listaEmprendimientos.length;
 
-    filterCards();
+  /* Suma las ventas de todos los emprendimientos */
+  var sumaVentas = 0;
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    sumaVentas += Number(listaEmprendimientos[i].ventas);
+  }
 
-}
-/* ---------- HERO STATS ---------- */
-function updateHeroStats() {
-
-    document.getElementById("statTotal").textContent = emprendimientos.length;
-
-    let total = 0;
-
-    emprendimientos.forEach(function(emp) {
-        total = total + Number(emp.ventas);
-    });
-
-    document.getElementById("statVentas").textContent = fmt(total);
-
+  obtenerElemento('totalVentas').textContent = formatearPrecio(sumaVentas);
 }
 
-/* ---------- CARDS – CATÁLOGO ---------- */
-function renderCards(list) {
-  const grid = $('cardsGrid');
-  const empty = $('emptyState');
-  grid.innerHTML = '';
-  if (!list.length) {
-    empty.style.display = 'block';
+
+/* CATÁLOGO – TARJETAS DE EMPRENDIMIENTOS */
+
+/*
+ * Renderiza la lista de emprendimientos como tarjetas HTML en el catálogo.
+ * @param {Array} lista - Lista de objetos emprendimiento a mostrar
+ */
+function mostrarTarjetas(lista) {
+  var contenedor   = obtenerElemento('cuadriculaTarjetas');
+  var mensajeVacio = obtenerElemento('estadoVacio');
+  contenedor.innerHTML = ''; /* Limpia el contenido previo */
+
+  /* Muestra mensaje vacío si no hay resultados */
+  if (lista.length === 0) {
+    mensajeVacio.style.display = 'block';
     return;
   }
-  empty.style.display = 'none';
-  list.forEach((e, i) => {
-    const card = document.createElement('div');
-    card.className = 'emp-card';
-    card.style.animationDelay = (i * 0.06) + 's';
-    const imgHtml = e.imagen
-      ? `<div class="card-img"><img src="${escHtml(e.imagen)}" alt="${escHtml(e.nombre)}" onerror="this.parentElement.innerHTML='${emojiFor(e.categoria)}'" /></div>`
-      : `<div class="card-img">${emojiFor(e.categoria)}</div>`;
-    card.innerHTML = `
-      ${imgHtml}
-      <div class="card-body">
-        <div class="card-meta">
-          <span class="card-badge badge-${e.categoria}">${e.categoria}</span>
-          <span class="status-pill status-${e.estado}">${e.estado}</span>
-        </div>
-        <h3 class="card-title">${escHtml(e.nombre)}</h3>
-        <p class="card-subtitle">&#x1F464; ${escHtml(e.responsable)} · ${escHtml(e.carrera)}</p>
-        <p class="card-desc">${escHtml(e.descripcion || e.producto)}</p>
-        <div class="card-footer">
-          <div>
-            <span class="card-sales-label">Ventas/mes</span>
-            <span class="card-sales">${fmt(e.ventas)}</span>
-          </div>
-          <div class="card-actions">
-            <button class="btn-icon" title="Editar" onclick="editEmp('${e.id}')">&#x270F;&#xFE0F;</button>
-            <button class="btn-icon del" title="Eliminar" onclick="confirmDelete('${e.id}')">&#x1F5D1;&#xFE0F;</button>
-          </div>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
+  mensajeVacio.style.display = 'none';
+
+  /* Crea una tarjeta por cada emprendimiento */
+  for (var i = 0; i < lista.length; i++) {
+    var emp = lista[i];
+    var tarjeta = document.createElement('div');
+    tarjeta.className = 'tarjeta-emp';
+    tarjeta.style.animationDelay = (i * 0.06) + 's'; /* Entrada escalonada */
+
+    /* Decide si mostrar imagen real o ícono de categoría */
+    var htmlImagen;
+    if (emp.imagen) {
+      htmlImagen =
+        '<div class="imagen-tarjeta">' +
+          obtenerIconoCategoria(emp.categoria) +
+          '<img src="' + escaparHtml(emp.imagen) + '" alt="' + escaparHtml(emp.nombre) + '" onerror="this.remove()" />' +
+        '</div>';
+    } else {
+      htmlImagen = '<div class="imagen-tarjeta">' + obtenerIconoCategoria(emp.categoria) + '</div>';
+    }
+
+    /* Construye el HTML completo de la tarjeta */
+    tarjeta.innerHTML =
+      htmlImagen +
+      '<div class="cuerpo-tarjeta">' +
+        '<div class="meta-tarjeta">' +
+          '<span class="badge-tarjeta badge-' + emp.categoria + '">' + emp.categoria + '</span>' +
+          '<span class="pastilla-estado estado-' + emp.estado + '">' + emp.estado + '</span>' +
+        '</div>' +
+        '<h3 class="titulo-tarjeta">' + escaparHtml(emp.nombre) + '</h3>' +
+        '<p class="subtitulo-tarjeta"><i class="fa-solid fa-user-graduate"></i> ' + escaparHtml(emp.responsable) + ' · ' + escaparHtml(emp.carrera) + '</p>' +
+        '<p class="descripcion-tarjeta">' + escaparHtml(emp.descripcion || emp.producto) + '</p>' +
+        '<div class="pie-tarjeta">' +
+          '<div>' +
+            '<span class="etiqueta-ventas">Ventas/mes</span>' +
+            '<span class="ventas-tarjeta">' + formatearPrecio(emp.ventas) + '</span>' +
+          '</div>' +
+          '<div class="acciones-tarjeta">' +
+            '<button class="btn-icono" title="Editar" onclick="editarEmprendimiento(\'' + emp.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
+            '<button class="btn-icono eliminar" title="Eliminar" onclick="confirmarEliminar(\'' + emp.id + '\')"><i class="fa-solid fa-trash-can"></i></button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+
+    contenedor.appendChild(tarjeta);
+  }
 }
 
-function filterCards() {
-  const q = $('catalogSearch').value.toLowerCase().trim();
-  const cat = $('catalogFilter').value;
-  const st = $('catalogStatus').value;
-  const filtered = emprendimientos.filter(e => {
-    const matchQ = !q || e.nombre.toLowerCase().includes(q) || e.codigo.toLowerCase().includes(q);
-    const matchCat = !cat || e.categoria === cat;
-    const matchSt = !st || e.estado === st;
-    return matchQ && matchCat && matchSt;
-  });
-  renderCards(filtered);
+/* Aplica los filtros activos y actualiza la cuadrícula de tarjetas */
+function filtrarTarjetas() {
+  var texto     = obtenerElemento('busquedaCatalogo').value.toLowerCase().trim();
+  var categoria = obtenerElemento('filtroCatalogo').value;
+  var estado    = obtenerElemento('estadoCatalogo').value;
+
+  var resultado = [];
+
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    var emp = listaEmprendimientos[i];
+
+    /* Verifica coincidencia en nombre o código */
+    var coincideTexto     = !texto     || emp.nombre.toLowerCase().indexOf(texto) !== -1 || emp.codigo.toLowerCase().indexOf(texto) !== -1;
+    var coincideCategoria = !categoria || emp.categoria === categoria;
+    var coincideEstado    = !estado    || emp.estado === estado;
+
+    if (coincideTexto && coincideCategoria && coincideEstado) {
+      resultado.push(emp);
+    }
+  }
+
+  mostrarTarjetas(resultado);
 }
 
-function clearFilters() {
-  $('catalogSearch').value = '';
-  $('catalogFilter').value = '';
-  $('catalogStatus').value = '';
-  renderCards(emprendimientos);
+/* Limpia todos los filtros y muestra todos los emprendimientos */
+function limpiarFiltros() {
+  obtenerElemento('busquedaCatalogo').value = '';
+  obtenerElemento('filtroCatalogo').value   = '';
+  obtenerElemento('estadoCatalogo').value   = '';
+  mostrarTarjetas(listaEmprendimientos);
 }
 
-/* ---------- FORMULARIO – REGISTRO ---------- */
-const FIELDS = [
-  { id: 'codigo',      label: 'Código',              req: true },
-  { id: 'nombre',      label: 'Nombre',              req: true },
-  { id: 'responsable', label: 'Responsable',         req: true },
-  { id: 'carrera',     label: 'Carrera/Departamento',req: true },
-  { id: 'categoria',   label: 'Categoría',           req: true },
-  { id: 'estado',      label: 'Estado',              req: true },
-  { id: 'producto',    label: 'Producto o servicio', req: true },
-  { id: 'ventas',      label: 'Ventas mensuales',    req: true, type: 'number' }
+
+/* FORMULARIO DE REGISTRO */
+
+/* Definición de los campos del formulario con sus reglas de validación */
+var CAMPOS_FORMULARIO = [
+  { id: 'codigo',      etiqueta: 'Código',               requerido: true },
+  { id: 'nombre',      etiqueta: 'Nombre',               requerido: true },
+  { id: 'responsable', etiqueta: 'Responsable',          requerido: true },
+  { id: 'carrera',     etiqueta: 'Carrera/Departamento', requerido: true },
+  { id: 'categoria',   etiqueta: 'Categoría',            requerido: true },
+  { id: 'estado',      etiqueta: 'Estado',               requerido: true },
+  { id: 'producto',    etiqueta: 'Producto o servicio',  requerido: true },
+  { id: 'ventas',      etiqueta: 'Ventas mensuales',     requerido: true, tipo: 'numero' }
 ];
 
-function validateForm() {
-  let valid = true;
-  FIELDS.forEach(f => {
-    const el = $(f.id);
-    const err = $('err-' + f.id);
-    const val = el.value.trim();
-    el.classList.remove('error');
-    if (err) err.textContent = '';
-    if (f.req && !val) {
-      el.classList.add('error');
-      if (err) err.textContent = f.label + ' es requerido.';
-      valid = false;
-    } else if (f.type === 'number' && val !== '' && (isNaN(val) || Number(val) < 0)) {
-      el.classList.add('error');
-      if (err) err.textContent = 'Ingrese un número válido.';
-      valid = false;
+/*
+ * Valida todos los campos del formulario.
+ * Muestra mensajes de error bajo cada campo inválido.
+ * @returns {boolean} true si el formulario es válido, false si hay errores
+ */
+function validarFormulario() {
+  var esValido = true;
+
+  for (var i = 0; i < CAMPOS_FORMULARIO.length; i++) {
+    var campo       = CAMPOS_FORMULARIO[i];
+    var elemento    = obtenerElemento(campo.id);
+    var errorElem   = obtenerElemento('err-' + campo.id);
+    var valor       = elemento.value.trim();
+
+    /* Limpia estado previo de error */
+    elemento.classList.remove('error');
+    if (errorElem) errorElem.textContent = '';
+
+    /* Valida campo requerido vacío */
+    if (campo.requerido && !valor) {
+      elemento.classList.add('error');
+      if (errorElem) errorElem.textContent = campo.etiqueta + ' es requerido.';
+      esValido = false;
+
+    /* Valida que sea un número positivo */
+    } else if (campo.tipo === 'numero' && valor !== '' && (isNaN(valor) || Number(valor) < 0)) {
+      elemento.classList.add('error');
+      if (errorElem) errorElem.textContent = 'Ingrese un número válido.';
+      esValido = false;
     }
-  });
-  return valid;
+  }
+
+  return esValido;
 }
 
-function resetForm() {
-  $('emprendimientoForm').reset();
-  $('editId').value = '';
-  $('submitBtn').textContent = 'Registrar Emprendimiento';
-  FIELDS.forEach(f => {
-    const el = $(f.id);
-    const err = $('err-' + f.id);
-    if (el) el.classList.remove('error');
-    if (err) err.textContent = '';
-  });
+/* Restablece el formulario a su estado inicial (sin datos ni errores) */
+function reiniciarFormulario() {
+  obtenerElemento('formularioEmprendimiento').reset();
+  obtenerElemento('idEdicion').value = '';
+  obtenerElemento('botonEnviar').textContent = 'Registrar Emprendimiento';
+
+  /* Limpia clases de error y mensajes de todos los campos */
+  for (var i = 0; i < CAMPOS_FORMULARIO.length; i++) {
+    var campo     = CAMPOS_FORMULARIO[i];
+    var elemento  = obtenerElemento(campo.id);
+    var errorElem = obtenerElemento('err-' + campo.id);
+    if (elemento)  elemento.classList.remove('error');
+    if (errorElem) errorElem.textContent = '';
+  }
 }
 
-$('emprendimientoForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  if (!validateForm()) return;
+/* Escucha el evento submit del formulario principal */
+obtenerElemento('formularioEmprendimiento').addEventListener('submit', function (evento) {
+  evento.preventDefault(); /* Evita recarga de la página */
 
-  const editId = $('editId').value;
-  const empData = {
-    codigo:      $('codigo').value.trim(),
-    nombre:      $('nombre').value.trim(),
-    responsable: $('responsable').value.trim(),
-    carrera:     $('carrera').value.trim(),
-    categoria:   $('categoria').value,
-    estado:      $('estado').value,
-    producto:    $('producto').value.trim(),
-    descripcion: $('descripcion').value.trim(),
-    ventas:      parseFloat($('ventas').value) || 0,
-    imagen:      $('imagen').value.trim()
+  if (!validarFormulario()) return; /* Detiene si hay errores */
+
+  var idEnEdicion = obtenerElemento('idEdicion').value;
+
+  /* Recolecta los datos del formulario */
+  var datosEmp = {
+    codigo:      obtenerElemento('codigo').value.trim(),
+    nombre:      obtenerElemento('nombre').value.trim(),
+    responsable: obtenerElemento('responsable').value.trim(),
+    carrera:     obtenerElemento('carrera').value.trim(),
+    categoria:   obtenerElemento('categoria').value,
+    estado:      obtenerElemento('estado').value,
+    producto:    obtenerElemento('producto').value.trim(),
+    descripcion: obtenerElemento('descripcion').value.trim(),
+    ventas:      parseFloat(obtenerElemento('ventas').value) || 0,
+    imagen:      obtenerElemento('imagen').value.trim()
   };
 
-  if (editId) {
-    // Editar
-    const idx = emprendimientos.findIndex(x => x.id === editId);
-    if (idx !== -1) {
-      emprendimientos[idx] = { ...emprendimientos[idx], ...empData };
-      saveLS();
-      showToast('\u{2705} Emprendimiento actualizado correctamente', 'success');
+  if (idEnEdicion) {
+    /* MODO EDICIÓN: actualiza el registro existente */
+    for (var i = 0; i < listaEmprendimientos.length; i++) {
+      if (listaEmprendimientos[i].id === idEnEdicion) {
+
+        /* Actualiza cada propiedad manualmente */
+        listaEmprendimientos[i].codigo      = datosEmp.codigo;
+        listaEmprendimientos[i].nombre      = datosEmp.nombre;
+        listaEmprendimientos[i].responsable = datosEmp.responsable;
+        listaEmprendimientos[i].carrera     = datosEmp.carrera;
+        listaEmprendimientos[i].categoria   = datosEmp.categoria;
+        listaEmprendimientos[i].estado      = datosEmp.estado;
+        listaEmprendimientos[i].producto    = datosEmp.producto;
+        listaEmprendimientos[i].descripcion = datosEmp.descripcion;
+        listaEmprendimientos[i].ventas      = datosEmp.ventas;
+        listaEmprendimientos[i].imagen      = datosEmp.imagen;
+        break;
+      }
     }
-    resetForm();
-    goTo('dashboard');
+    guardarEnAlmacenamiento();
+    mostrarAviso('✅ Emprendimiento actualizado correctamente', 'exito');
+    reiniciarFormulario();
+    irA('panel'); /* Redirige al panel tras editar */
+
   } else {
-    // Crear
-    const nuevo = { id: uid(), ...empData };
-    emprendimientos.push(nuevo);
-    saveLS();
-    updateHeroStats();
-    // Mostrar éxito
-    $('emprendimientoForm').style.display = 'none';
-    $('successMsg').textContent = `"${nuevo.nombre}" ha sido añadido al catálogo ESPE Emprende.`;
-    $('formSuccess').style.display = 'block';
-    showToast('\u{1F680} Emprendimiento registrado exitosamente', 'success');
+    /* MODO CREACIÓN: añade un nuevo registro */
+    datosEmp.id = generarId(); /* Asigna ID único */
+    listaEmprendimientos.push(datosEmp);
+    guardarEnAlmacenamiento();
+    actualizarEstadisticasInicio();
+
+    /* Muestra el mensaje de éxito y oculta el formulario */
+    obtenerElemento('formularioEmprendimiento').style.display = 'none';
+    obtenerElemento('mensajeExito').textContent = '"' + datosEmp.nombre + '" ha sido añadido al catálogo ESPE Emprende.';
+    obtenerElemento('exitoFormulario').style.display = 'block';
+    mostrarAviso('🚀 Emprendimiento registrado exitosamente', 'exito');
   }
 });
 
-/* ---------- EDITAR ---------- */
-function editEmp(id) {
-  const emp = emprendimientos.find(e => e.id === id);
-  if (!emp) return;
-  goTo('registro');
-  // Asegurar que el form esté visible
-  $('emprendimientoForm').style.display = 'grid';
-  $('formSuccess').style.display = 'none';
-  // Rellenar campos
-  $('editId').value = emp.id;
-  $('codigo').value = emp.codigo;
-  $('nombre').value = emp.nombre;
-  $('responsable').value = emp.responsable;
-  $('carrera').value = emp.carrera;
-  $('categoria').value = emp.categoria;
-  $('estado').value = emp.estado;
-  $('producto').value = emp.producto;
-  $('descripcion').value = emp.descripcion || '';
-  $('ventas').value = emp.ventas;
-  $('imagen').value = emp.imagen || '';
-  $('submitBtn').textContent = '\u{1F4BE} Guardar Cambios';
-  showToast('\u{270F}\u{FE0F} Editando: ' + emp.nombre, 'info');
+
+/* EDITAR EMPRENDIMIENTO */
+
+/*
+ * Carga los datos de un emprendimiento existente en el formulario para editarlos.
+ * @param {string} id - ID del emprendimiento a editar
+ */
+function editarEmprendimiento(id) {
+  var emp = null;
+
+  /* Busca el emprendimiento por ID */
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    if (listaEmprendimientos[i].id === id) {
+      emp = listaEmprendimientos[i];
+      break;
+    }
+  }
+
+  if (!emp) return; /* Sale si no lo encuentra */
+
+  /* Navega al formulario y asegura que esté visible */
+  irA('registro');
+  obtenerElemento('formularioEmprendimiento').style.display = 'grid';
+  obtenerElemento('exitoFormulario').style.display = 'none';
+
+  /* Rellena el formulario con los datos del emprendimiento */
+  obtenerElemento('idEdicion').value    = emp.id;
+  obtenerElemento('codigo').value       = emp.codigo;
+  obtenerElemento('nombre').value       = emp.nombre;
+  obtenerElemento('responsable').value  = emp.responsable;
+  obtenerElemento('carrera').value      = emp.carrera;
+  obtenerElemento('categoria').value    = emp.categoria;
+  obtenerElemento('estado').value       = emp.estado;
+  obtenerElemento('producto').value     = emp.producto;
+  obtenerElemento('descripcion').value  = emp.descripcion || '';
+  obtenerElemento('ventas').value       = emp.ventas;
+  obtenerElemento('imagen').value       = emp.imagen || '';
+
+  /* Cambia el texto del botón para indicar modo edición */
+  obtenerElemento('botonEnviar').textContent = '💾 Guardar Cambios';
+
+  mostrarAviso('✏️ Editando: ' + emp.nombre, 'info');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-/* ---------- ELIMINAR ---------- */
-function confirmDelete(id) {
-  deleteTargetId = id;
-  const emp = emprendimientos.find(e => e.id === id);
-  $('deleteMsg').textContent = `¿Eliminar "${emp ? emp.nombre : id}"? Esta acción no se puede deshacer.`;
-  $('deleteModal').style.display = 'flex';
+
+/* ELIMINAR EMPRENDIMIENTO */
+
+/*
+ * Abre el modal de confirmación antes de eliminar.
+ * @param {string} id - ID del emprendimiento a eliminar
+ */
+function confirmarEliminar(id) {
+  idPendienteEliminar = id;
+
+  /* Busca el nombre del emprendimiento para mostrarlo en el modal */
+  var emp = null;
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    if (listaEmprendimientos[i].id === id) {
+      emp = listaEmprendimientos[i];
+      break;
+    }
+  }
+
+  /* Personaliza el mensaje del modal con el nombre del emprendimiento */
+  obtenerElemento('mensajeEliminar').textContent =
+    '¿Eliminar "' + (emp ? emp.nombre : id) + '"? Esta acción no se puede deshacer.';
+
+  obtenerElemento('modalEliminar').style.display = 'flex'; /* Muestra el modal */
 }
 
-function closeModal() {
-  $('deleteModal').style.display = 'none';
-  deleteTargetId = null;
+/* Cierra el modal de eliminación sin realizar cambios */
+function cerrarModal() {
+  obtenerElemento('modalEliminar').style.display = 'none';
+  idPendienteEliminar = null;
 }
 
-$('confirmDelete').addEventListener('click', function() {
-  if (!deleteTargetId) return;
-  const emp = emprendimientos.find(e => e.id === deleteTargetId);
-  emprendimientos = emprendimientos.filter(e => e.id !== deleteTargetId);
-  saveLS();
-  closeModal();
-  // Refrescar vistas activas
-  const active = document.querySelector('.section.active');
-  if (active && active.id === 'emprendimientos') filterCards();
-  if (active && active.id === 'dashboard') renderDashboard();
-  updateHeroStats();
-  showToast(`\u{1F5D1}\u{FE0F} "${emp ? emp.nombre : ''}" eliminado`, 'error');
+/* Ejecuta la eliminación al confirmar en el modal */
+obtenerElemento('confirmarEliminar').addEventListener('click', function () {
+  if (!idPendienteEliminar) return;
+
+  var nombreEliminado = '';
+  var listaFiltrada   = [];
+
+  /* Separa el elemento a eliminar del resto */
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    if (listaEmprendimientos[i].id === idPendienteEliminar) {
+      nombreEliminado = listaEmprendimientos[i].nombre;
+    } else {
+      listaFiltrada.push(listaEmprendimientos[i]);
+    }
+  }
+
+  listaEmprendimientos = listaFiltrada;
+  guardarEnAlmacenamiento();
+  cerrarModal();
+
+  /* Refresca la vista activa tras eliminar */
+  var seccionActiva = document.querySelector('.seccion.activo');
+  if (seccionActiva && seccionActiva.id === 'emprendimientos') filtrarTarjetas();
+  if (seccionActiva && seccionActiva.id === 'panel')           mostrarPanel();
+
+  actualizarEstadisticasInicio();
+  mostrarAviso('🗑️ "' + nombreEliminado + '" eliminado', 'error');
 });
 
-// Cerrar modal al click fuera
-$('deleteModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
+/* Cierra el modal al hacer clic en el fondo oscuro (overlay) */
+obtenerElemento('modalEliminar').addEventListener('click', function (evento) {
+  if (evento.target === this) cerrarModal();
 });
 
-/* ---------- TABLA DINÁMICA ---------- */
-function renderTable(list) {
-  const tbody = $('tableBody');
-  const empty = $('tableEmpty');
-  tbody.innerHTML = '';
-  if (!list.length) {
-    empty.style.display = 'block';
+
+/* TABLA DINÁMICA (PANEL) */
+
+/*
+ * Renderiza los emprendimientos como filas en la tabla del panel.
+ * @param {Array} lista - Lista de emprendimientos a mostrar
+ */
+function mostrarTabla(lista) {
+  var cuerpoTabla  = obtenerElemento('cuerpoTabla');
+  var mensajeVacio = obtenerElemento('tablaVacia');
+  cuerpoTabla.innerHTML = ''; /* Limpia filas previas */
+
+  /* Muestra mensaje si no hay registros */
+  if (lista.length === 0) {
+    mensajeVacio.style.display = 'block';
     return;
   }
-  empty.style.display = 'none';
-  list.forEach(e => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td><span class="code-cell">${escHtml(e.codigo)}</span></td>
-      <td><strong>${escHtml(e.nombre)}</strong></td>
-      <td>${escHtml(e.responsable)}</td>
-      <td>${escHtml(e.carrera)}</td>
-      <td><span class="card-badge badge-${e.categoria}">${e.categoria}</span></td>
-      <td><span class="status-pill status-${e.estado}">${e.estado}</span></td>
-      <td class="sales-cell">${fmt(e.ventas)}</td>
-      <td>
-        <div style="display:flex;gap:.35rem">
-          <button class="btn-icon" title="Editar" onclick="editEmp('${e.id}')">&#x270F;&#xFE0F;</button>
-          <button class="btn-icon del" title="Eliminar" onclick="confirmDelete('${e.id}')">&#x1F5D1;&#xFE0F;</button>
-        </div>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+  mensajeVacio.style.display = 'none';
+
+  /* Construye una fila por cada emprendimiento */
+  for (var i = 0; i < lista.length; i++) {
+    var emp  = lista[i];
+    var fila = document.createElement('tr');
+    fila.innerHTML =
+      '<td><span class="celda-codigo">' + escaparHtml(emp.codigo) + '</span></td>' +
+      '<td><strong>' + escaparHtml(emp.nombre) + '</strong></td>' +
+      '<td>' + escaparHtml(emp.responsable) + '</td>' +
+      '<td>' + escaparHtml(emp.carrera) + '</td>' +
+      '<td><span class="badge-tarjeta badge-' + emp.categoria + '">' + emp.categoria + '</span></td>' +
+      '<td><span class="pastilla-estado estado-' + emp.estado + '">' + emp.estado + '</span></td>' +
+      '<td class="celda-ventas">' + formatearPrecio(emp.ventas) + '</td>' +
+      '<td>' +
+        '<div class="acciones-tabla">' +
+          '<button class="btn-icono" title="Editar" onclick="editarEmprendimiento(\'' + emp.id + '\')"><i class="fa-solid fa-pen"></i></button>' +
+          '<button class="btn-icono eliminar" title="Eliminar" onclick="confirmarEliminar(\'' + emp.id + '\')"><i class="fa-solid fa-trash-can"></i></button>' +
+        '</div>' +
+      '</td>';
+    cuerpoTabla.appendChild(fila);
+  }
 }
 
-function filterTable() {
-  const q = $('tableSearch').value.toLowerCase().trim();
-  const cat = $('tableFilterCat').value;
-  const filtered = emprendimientos.filter(e => {
-    const matchQ = !q || e.nombre.toLowerCase().includes(q) || e.codigo.toLowerCase().includes(q) || e.responsable.toLowerCase().includes(q);
-    const matchCat = !cat || e.categoria === cat;
-    return matchQ && matchCat;
-  });
-  renderTable(filtered);
-}
+/* Filtra las filas de la tabla según búsqueda y categoría */
+function filtrarTabla() {
+  var texto     = obtenerElemento('busquedaTabla').value.toLowerCase().trim();
+  var categoria = obtenerElemento('filtroCategoriaTabla').value;
 
-/* ---------- ESTADÍSTICAS ---------- */
-function renderStats() {
-  const total = emprendimientos.length;
-  const totalVentas = emprendimientos.reduce((s, e) => s + Number(e.ventas), 0);
-  const promedio = total ? totalVentas / total : 0;
-  const topEmp = emprendimientos.reduce((best, e) => (!best || Number(e.ventas) > Number(best.ventas)) ? e : best, null);
+  var resultado = [];
 
-  $('kpiTotal').textContent = total;
-  $('kpiVentasTotal').textContent = fmt(totalVentas);
-  $('kpiPromedio').textContent = fmt(promedio);
-  $('kpiTop').textContent = topEmp ? topEmp.nombre : '—';
-}
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    var emp = listaEmprendimientos[i];
 
-function renderCategoryChart() {
-  const cats = ['Tecnología','Alimentos','Servicios','Educación','Ambiente','Artesanías','Salud','Otro'];
-  const counts = cats.map(c => emprendimientos.filter(e => e.categoria === c).length);
-  const max = Math.max(...counts, 1);
-  const container = $('catChart');
-  container.innerHTML = '';
-  cats.forEach((c, i) => {
-    if (!counts[i]) return;
-    const pct = Math.round((counts[i] / max) * 100);
-    container.innerHTML += `
-      <div class="bar-row">
-        <span class="bar-label">${emojiFor(c)} ${c}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%"></div></div>
-        <span class="bar-count">${counts[i]}</span>
-      </div>`;
-  });
-  if (!container.innerHTML) container.innerHTML = '<p style="color:var(--gray-400);font-size:.85rem">Sin datos</p>';
-}
+    /* Coincide si el texto aparece en nombre, código o responsable */
+    var coincideTexto     = !texto     || emp.nombre.toLowerCase().indexOf(texto) !== -1 || emp.codigo.toLowerCase().indexOf(texto) !== -1 || emp.responsable.toLowerCase().indexOf(texto) !== -1;
+    var coincideCategoria = !categoria || emp.categoria === categoria;
 
-function renderStatusChart() {
-  const statuses = ['Idea','Prototipo','En marcha','En crecimiento'];
-  const colors = ['#F2C300','#003A70','#00783F','#D32F2F'];
-  const counts = statuses.map(s => emprendimientos.filter(e => e.estado === s).length);
-  const max = Math.max(...counts, 1);
-  const container = $('statusChart');
-  container.innerHTML = '';
-  statuses.forEach((s, i) => {
-    if (!counts[i]) return;
-    const pct = Math.round((counts[i] / max) * 100);
-    container.innerHTML += `
-      <div class="bar-row">
-        <span class="bar-label">${s}</span>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${colors[i]}"></div></div>
-        <span class="bar-count">${counts[i]}</span>
-      </div>`;
-  });
-  if (!container.innerHTML) container.innerHTML = '<p style="color:var(--gray-400);font-size:.85rem">Sin datos</p>';
-}
-
-function renderDashboard() {
-  renderStats();
-  renderCategoryChart();
-  renderStatusChart();
-  renderTable(emprendimientos);
-}
-
-/* ---------- CONTACTO ---------- */
-$('contactForm').addEventListener('submit', function(e) {
-  e.preventDefault();
-  const nombre = $('cNombre'), email = $('cEmail'), asunto = $('cAsunto'), mensaje = $('cMensaje');
-  let valid = true;
-  [
-    { el: nombre, err: 'cerr-nombre', label: 'Nombre' },
-    { el: email,  err: 'cerr-email',  label: 'Correo' },
-    { el: asunto, err: 'cerr-asunto', label: 'Asunto' },
-    { el: mensaje,err: 'cerr-mensaje',label: 'Mensaje' }
-  ].forEach(({ el, err, label }) => {
-    el.classList.remove('error');
-    $(err).textContent = '';
-    if (!el.value.trim()) {
-      el.classList.add('error');
-      $(err).textContent = label + ' es requerido.';
-      valid = false;
+    if (coincideTexto && coincideCategoria) {
+      resultado.push(emp);
     }
-  });
-  if (!valid) return;
-  // Simular envío
-  $('contactForm').style.display = 'none';
-  $('contactSuccess').style.display = 'block';
-  showToast('\u{1F4EC} Mensaje enviado correctamente', 'success');
-});
+  }
 
-/* ---------- NAVBAR COMPORTAMIENTO ---------- */
-window.addEventListener('scroll', () => {
-  const nav = $('navbar');
-  if (window.scrollY > 20) nav.classList.add('scrolled');
-  else nav.classList.remove('scrolled');
-});
-
-$('navToggle').addEventListener('click', () => {
-  $('navLinks').classList.toggle('open');
-});
-
-// Navegación por links
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', function(e) {
-    e.preventDefault();
-    goTo(this.dataset.section);
-  });
-});
-
-/* ---------- ESCAPE HTML ---------- */
-function escHtml(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+  mostrarTabla(resultado);
 }
 
-/* ---------- INIT ---------- */
-document.addEventListener('DOMContentLoaded', () => {
-  loadLS();
-  updateHeroStats();
-  // Activar sección inicio por defecto
-  goTo('inicio');
+
+/* ESTADÍSTICAS Y GRÁFICOS DEL PANEL */
+
+/* Calcula y actualiza los KPI del panel */
+function mostrarEstadisticas() {
+  var total       = listaEmprendimientos.length;
+  var sumaVentas  = 0;
+  var empTop      = null; /* Emprendimiento con más ventas */
+
+  for (var i = 0; i < listaEmprendimientos.length; i++) {
+    var emp = listaEmprendimientos[i];
+    sumaVentas += Number(emp.ventas);
+
+    if (!empTop || Number(emp.ventas) > Number(empTop.ventas)) {
+      empTop = emp;
+    }
+  }
+
+  var promedio = total ? sumaVentas / total : 0;
+
+  /* Actualiza los valores en el DOM */
+  obtenerElemento('kpiTotal').textContent        = total;
+  obtenerElemento('kpiVentasTotales').textContent = formatearPrecio(sumaVentas);
+  obtenerElemento('kpiPromedio').textContent      = formatearPrecio(promedio);
+  obtenerElemento('kpiTop').textContent           = empTop ? empTop.nombre : '—';
+}
+
+/* Renderiza el gráfico de barras por categoría */
+function mostrarGraficoCategorias() {
+  var categorias = ['Tecnología', 'Alimentos', 'Servicios', 'Educación', 'Ambiente', 'Artesanías', 'Salud', 'Otro'];
+  var conteos    = [];
+  var maximo     = 1; /* Valor mínimo para evitar división por cero */
+
+  /* Cuenta cuántos emprendimientos hay por cada categoría */
+  for (var i = 0; i < categorias.length; i++) {
+    var cantidad = 0;
+    for (var j = 0; j < listaEmprendimientos.length; j++) {
+      if (listaEmprendimientos[j].categoria === categorias[i]) { cantidad++; }
+    }
+    conteos.push(cantidad);
+    if (cantidad > maximo) maximo = cantidad;
+  }
+
+  var contenedor = obtenerElemento('graficoCategorias');
+  contenedor.innerHTML = '';
+
+  /* Dibuja una fila de barra por cada categoría con datos */
+  for (var i = 0; i < categorias.length; i++) {
+    if (!conteos[i]) continue; /* Omite categorías vacías */
+    var porcentaje = Math.round((conteos[i] / maximo) * 100);
+    contenedor.innerHTML +=
+      '<div class="fila-barra">' +
+        '<span class="etiqueta-barra">' + obtenerIconoCategoria(categorias[i]) + ' ' + categorias[i] + '</span>' +
+        '<div class="pista-barra"><div class="relleno-barra" style="width:' + porcentaje + '%"></div></div>' +
+        '<span class="conteo-barra">' + conteos[i] + '</span>' +
+      '</div>';
+  }
+
+  /* Mensaje si no hay datos */
+  if (!contenedor.innerHTML) {
+    contenedor.innerHTML = '<p style="color:var(--gris-400);font-size:.85rem">Sin datos</p>';
+  }
+}
+
+/* Renderiza el gráfico de barras por estado */
+function mostrarGraficoEstados() {
+  var estados  = ['Idea', 'Prototipo', 'En marcha', 'En crecimiento'];
+  var colores  = ['#F2C300', '#003A70', '#00783F', '#D32F2F']; /* Colores por estado */
+  var conteos  = [];
+  var maximo   = 1;
+
+  /* Cuenta emprendimientos por cada estado */
+  for (var i = 0; i < estados.length; i++) {
+    var cantidad = 0;
+    for (var j = 0; j < listaEmprendimientos.length; j++) {
+      if (listaEmprendimientos[j].estado === estados[i]) { cantidad++; }
+    }
+    conteos.push(cantidad);
+    if (cantidad > maximo) maximo = cantidad;
+  }
+
+  var contenedor = obtenerElemento('graficoEstados');
+  contenedor.innerHTML = '';
+
+  /* Dibuja una barra por cada estado con su color propio */
+  for (var i = 0; i < estados.length; i++) {
+    if (!conteos[i]) continue;
+    var porcentaje = Math.round((conteos[i] / maximo) * 100);
+    contenedor.innerHTML +=
+      '<div class="fila-barra">' +
+        '<span class="etiqueta-barra">' + estados[i] + '</span>' +
+        '<div class="pista-barra"><div class="relleno-barra" style="width:' + porcentaje + '%;background:' + colores[i] + '"></div></div>' +
+        '<span class="conteo-barra">' + conteos[i] + '</span>' +
+      '</div>';
+  }
+
+  if (!contenedor.innerHTML) {
+    contenedor.innerHTML = '<p style="color:var(--gris-400);font-size:.85rem">Sin datos</p>';
+  }
+}
+
+/* Orquesta la actualización completa del panel */
+function mostrarPanel() {
+  mostrarEstadisticas();
+  mostrarGraficoCategorias();
+  mostrarGraficoEstados();
+  mostrarTabla(listaEmprendimientos);
+}
+
+
+/* FORMULARIO DE CONTACTO */
+
+/* Escucha el submit del formulario de contacto */
+obtenerElemento('formularioContacto').addEventListener('submit', function (evento) {
+  evento.preventDefault();
+
+  /* Definición de campos del formulario de contacto */
+  var camposContacto = [
+    { elemento: obtenerElemento('cNombre'),  idError: 'cerr-nombre',  etiqueta: 'Nombre'  },
+    { elemento: obtenerElemento('cCorreo'),  idError: 'cerr-correo',  etiqueta: 'Correo'  },
+    { elemento: obtenerElemento('cAsunto'),  idError: 'cerr-asunto',  etiqueta: 'Asunto'  },
+    { elemento: obtenerElemento('cMensaje'), idError: 'cerr-mensaje', etiqueta: 'Mensaje' }
+  ];
+
+  var esValido = true;
+
+  /* Valida que todos los campos estén completos */
+  for (var i = 0; i < camposContacto.length; i++) {
+    var campo = camposContacto[i];
+    campo.elemento.classList.remove('error');
+    obtenerElemento(campo.idError).textContent = '';
+
+    if (!campo.elemento.value.trim()) {
+      campo.elemento.classList.add('error');
+      obtenerElemento(campo.idError).textContent = campo.etiqueta + ' es requerido.';
+      esValido = false;
+    }
+  }
+
+  if (!esValido) return;
+
+  /* Simula el envío ocultando el formulario y mostrando mensaje de éxito */
+  obtenerElemento('formularioContacto').style.display = 'none';
+  obtenerElemento('exitoContacto').style.display      = 'block';
+  mostrarAviso('📬 Mensaje enviado correctamente', 'exito');
+});
+
+
+/* COMPORTAMIENTO DE LA BARRA DE NAVEGACIÓN */
+
+/* Agrega sombra a la barra cuando el usuario hace scroll */
+window.addEventListener('scroll', function () {
+  var barraNav = obtenerElemento('barraNav');
+  if (window.scrollY > 20) {
+    barraNav.classList.add('con-sombra');
+  } else {
+    barraNav.classList.remove('con-sombra');
+  }
+});
+
+/* Abre / cierra el menú móvil al hacer clic en el botón hamburguesa */
+obtenerElemento('botonMenu').addEventListener('click', function () {
+  obtenerElemento('enlacesNav').classList.toggle('abierto');
+});
+
+/* Añade navegación a todos los enlaces del menú */
+var enlacesMenu = document.querySelectorAll('.enlace-nav');
+for (var i = 0; i < enlacesMenu.length; i++) {
+  enlacesMenu[i].addEventListener('click', function (evento) {
+    evento.preventDefault();
+    irA(this.dataset.seccion); /* Lee el atributo data-seccion */
+  });
+}
+
+
+/* INICIO DE LA APLICACIÓN */
+
+/* Se ejecuta cuando el DOM está completamente cargado */
+document.addEventListener('DOMContentLoaded', function () {
+  cargarDesdeAlmacenamiento();   /* Carga datos desde LocalStorage */
+  actualizarEstadisticasInicio(); /* Muestra contadores en el hero */
+  irA('inicio');                 /* Activa la sección de inicio por defecto */
 });

@@ -4,139 +4,212 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ESPE Emprende – Portal de Emprendimientos Universitarios</title>
-  <link rel="stylesheet" href="styles.css" />
+
+  <!--Hoja de estilos principal-->
+  <link rel="stylesheet" href="estilos.css" />
+
+  <!--Fuentes tipográficas de Google Fonts-->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet" />
+<link rel="icon" type="image/png" href="./imagenes/logo.png" />
+  <!--Biblioteca de íconos Font Awesome-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
 
-<!-- ==================== NAVBAR ==================== -->
-<header class="navbar" id="navbar">
-  <div class="nav-container">
-    <div class="nav-brand">
-     
-      <div class="brand-text">
-        <span class="brand-title">ESPE Emprende</span>
-        <span class="brand-sub">Portal de Emprendimientos</span>
+<!-- BARRA DE NAVEGACIÓN -->
+<header class="barra-nav" id="barraNav">  <!--Encabezado fijo en la parte superior-->
+  <div class="contenedor-nav">
+
+    <!--Marca / logo del portal-->
+    <div class="marca-nav">
+      <div class="texto-marca">
+        <span class="titulo-marca">ESPE Emprende</span>
+        <span class="subtitulo-marca">Portal de Emprendimientos</span>
       </div>
     </div>
-    <nav class="nav-links" id="navLinks">
-      <a href="#inicio" class="nav-link active" data-section="inicio">Inicio</a>
-      <a href="#emprendimientos" class="nav-link" data-section="emprendimientos">Emprendimientos</a>
-      <a href="#registro" class="nav-link" data-section="registro">Registrar</a>
-      <a href="#dashboard" class="nav-link" data-section="dashboard">Dashboard</a>
-      <a href="#contacto" class="nav-link" data-section="contacto">Contacto</a>
+
+    <!--Enlaces de navegación principal-->
+    <nav class="enlaces-nav" id="enlacesNav">
+      <a href="#inicio"          class="enlace-nav activo" data-seccion="inicio">Inicio</a>
+      <a href="#emprendimientos" class="enlace-nav"         data-seccion="emprendimientos">Emprendimientos</a>
+      <a href="#registro"        class="enlace-nav"         data-seccion="registro">Registrar</a>
+      <a href="#panel"           class="enlace-nav"         data-seccion="panel">Dashboard</a>
+      <a href="#contacto"        class="enlace-nav"         data-seccion="contacto">Contacto</a>
     </nav>
-    <button class="nav-toggle" id="navToggle" aria-label="Menú">
+
+    <!--Botón hamburguesa para menú móvil-->
+    <button class="boton-menu" id="botonMenu" aria-label="Menú">
       <span></span><span></span><span></span>
     </button>
   </div>
 </header>
 
-<!-- ==================== INICIO ==================== -->
-<section id="inicio" class="section section-inicio active">
-  <!-- Banner Hero -->
+
+<!-- SECCIÓN INICIO -->
+<section id="inicio" class="seccion seccion-inicio activo">  <!--Sección de bienvenida visible por defecto-->
+
+  <!--Bloque hero / banner principal-->
   <div class="hero">
-    
-    <div class="hero-content">
-      <div class="hero-badge"> Emprende ESPE 2026</div>
-      <h1 class="hero-title">Impulsa tu idea,<br /><span class="gradient-text">transforma Ecuador</span></h1>
-      <p class="hero-desc">El portal oficial de emprendimientos de la Universidad de las Fuerzas Armadas ESPE. Conectamos talento universitario con oportunidades reales.</p>
-      <div class="hero-actions">
-        <button class="btn btn-primary" onclick="goTo('registro')">Registrar Emprendimiento</button>
-        <button class="btn btn-outline" onclick="goTo('emprendimientos')">Explorar Catálogo</button>
+
+    <!--Contenido textual del hero-->
+    <div class="contenido-hero">
+      <div class="insignia-hero">Emprende ESPE 2026</div>  <!--Etiqueta de año-->
+
+      <h1 class="titulo-hero">
+        Impulsa tu idea,<br />
+        <span class="texto-degradado">emprendimientos que inspiran futuro</span>
+      </h1>
+
+      <p class="descripcion-hero">
+        El portal oficial de emprendimientos de la Universidad de las Fuerzas Armadas ESPE.
+        Conectamos talento universitario con oportunidades reales.
+      </p>
+
+      <!--Botones de acción principales-->
+      <div class="acciones-hero">
+        <button class="btn btn-primario" onclick="irA('registro')">Registrar Emprendimiento</button>
+        <button class="btn btn-contorno" onclick="irA('emprendimientos')">Explorar Catálogo</button>
       </div>
-      <div class="hero-stats">
-        <div class="stat-item">
-          <span class="stat-num" id="statTotal">0</span>
-          <span class="stat-label">Emprendimientos</span>
+
+      <!--Estadísticas resumidas del sistema-->
+      <div class="estadisticas-hero">
+        <div class="elemento-estadistica">
+          <span class="numero-estadistica" id="totalEmprendimientos">0</span>
+          <span class="etiqueta-estadistica">Emprendimientos</span>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-num" id="statVentas">$0</span>
-          <span class="stat-label">Ventas Totales/mes</span>
+        <div class="divisor-estadistica"></div>
+        <div class="elemento-estadistica">
+          <span class="numero-estadistica" id="totalVentas">$0</span>
+          <span class="etiqueta-estadistica">Ventas Totales/mes</span>
         </div>
-        <div class="stat-divider"></div>
-        <div class="stat-item">
-          <span class="stat-num">8</span>
-          <span class="stat-label">Categorías</span>
+        <div class="divisor-estadistica"></div>
+        <div class="elemento-estadistica">
+          <span class="numero-estadistica">8</span>
+          <span class="etiqueta-estadistica">Categorías</span>
         </div>
       </div>
     </div>
-    <div class="hero-image" aria-hidden="true">
+
+    <!--Imagen de fondo del hero (decorativa)-->
+    <div class="imagen-hero" aria-hidden="true">
       <img src="./imagenes/espe-estudiantes.jpg" alt="" />
     </div>
   </div>
 
-  <!-- Ecosistema ESPE -->
-  <div class="ecosystem">
-    <div class="container">
-      <div class="section-header">
-        <div class="section-eyebrow">Nuestro Ecosistema</div>
-        <h2 class="section-title">¿Qué es ESPE Emprende?</h2>
-        <p class="section-desc">Un espacio digital para visibilizar, gestionar y potenciar los emprendimientos que nacen en las aulas de la ESPE.</p>
+
+  <!--Bloque del ecosistema ESPE-->
+  <div class="ecosistema">
+    <div class="contenedor">
+
+      <!--Encabezado de la sección ecosistema-->
+      <div class="encabezado-seccion">
+        <div class="subtitulo-eyebrow">Nuestro Ecosistema</div>
+        <h2 class="titulo-seccion">¿Qué es ESPE Emprende?</h2>
+        <p class="descripcion-seccion">
+          Un espacio digital para visibilizar, gestionar y potenciar los emprendimientos
+          que nacen en las aulas de la ESPE.
+        </p>
       </div>
-      <div class="ecosystem-grid">
-        <div class="eco-card">
-          <div class="eco-icon">&#x1F393;</div>
+
+      <!--Cuadrícula de tarjetas del ecosistema-->
+      <div class="cuadricula-ecosistema">
+
+        <!--Tarjeta: Origen universitario-->
+        <div class="tarjeta-eco">
+          <div class="icono-eco icono-etiqueta"><i class="fa-solid fa-user-graduate"></i></div>
           <h3>Origen Universitario</h3>
           <p>Todos los emprendimientos son desarrollados por estudiantes, docentes y egresados de la ESPE con respaldo académico.</p>
         </div>
-        <div class="eco-card">
-          <div class="eco-icon">&#x1F91D;</div>
+
+        <!--Tarjeta: Red de apoyo-->
+        <div class="tarjeta-eco">
+          <div class="icono-eco icono-etiqueta"><i class="fa-solid fa-handshake"></i></div>
           <h3>Red de Apoyo</h3>
           <p>Vinculamos emprendedores con mentores, inversionistas y aliados estratégicos del sector público y privado.</p>
         </div>
-        <div class="eco-card">
-          <div class="eco-icon">&#x1F52C;</div>
+
+        <!--Tarjeta: Innovación aplicada-->
+        <div class="tarjeta-eco">
+          <div class="icono-eco icono-etiqueta"><i class="fa-solid fa-flask"></i></div>
           <h3>Innovación Aplicada</h3>
           <p>Fomentamos proyectos que resuelven problemas reales con ciencia, tecnología e ingenio ecuatoriano.</p>
         </div>
-        <div class="eco-card">
-          <div class="eco-icon">&#x1F30E;</div>
+
+        <!--Tarjeta: Impacto nacional-->
+        <div class="tarjeta-eco">
+          <div class="icono-eco icono-etiqueta"><i class="fa-solid fa-earth-americas"></i></div>
           <h3>Impacto Nacional</h3>
           <p>Nuestros emprendedores generan empleo y valor en comunidades de todo Ecuador desde campus ESPE.</p>
         </div>
       </div>
 
-      <!-- Categorías visuales -->
-      <div class="categories-showcase">
-        <div class="section-header" style="margin-top:3rem">
-          <div class="section-eyebrow">Áreas de Impacto</div>
-          <h2 class="section-title">Categorías de Emprendimiento</h2>
+
+      <!--Sección de categorías visuales con chips clickeables-->
+      <div class="vitrina-categorias">
+        <div class="encabezado-seccion" style="margin-top:3rem">
+          <div class="subtitulo-eyebrow">Áreas de Impacto</div>
+          <h2 class="titulo-seccion">Categorías de Emprendimiento</h2>
         </div>
-        <div class="cat-grid">
-          <div class="cat-chip" onclick="filterAndGo('Tecnología')"><span>&#x1F4BB;</span> Tecnología</div>
-          <div class="cat-chip" onclick="filterAndGo('Alimentos')"><span>&#x1F34E;</span> Alimentos</div>
-          <div class="cat-chip" onclick="filterAndGo('Servicios')"><span>&#x1F6E0;&#xFE0F;</span> Servicios</div>
-          <div class="cat-chip" onclick="filterAndGo('Educación')"><span>&#x1F4DA;</span> Educación</div>
-          <div class="cat-chip" onclick="filterAndGo('Ambiente')"><span>&#x1F331;</span> Ambiente</div>
-          <div class="cat-chip" onclick="filterAndGo('Artesanías')"><span>&#x1F3A8;</span> Artesanías</div>
-          <div class="cat-chip" onclick="filterAndGo('Salud')"><span>&#x2764;&#xFE0F;</span> Salud</div>
-          <div class="cat-chip" onclick="filterAndGo('Otro')"><span>&#x2728;</span> Otro</div>
+
+        <!--Chips de categoría: al hacer clic filtran el catálogo-->
+        <div class="cuadricula-categorias">
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Tecnología')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-laptop-code"></i></span> Tecnología
+          </div>
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Alimentos')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-utensils"></i></span> Alimentos
+          </div>
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Servicios')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-screwdriver-wrench"></i></span> Servicios
+          </div>
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Educación')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-book-open"></i></span> Educación
+          </div>
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Ambiente')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-leaf"></i></span> Ambiente
+          </div>
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Artesanías')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-palette"></i></span> Artesanías
+          </div>
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Salud')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-heart-pulse"></i></span> Salud
+          </div>
+          <div class="chip-categoria etiqueta-audiencia" onclick="filtrarYNavegar('Otro')">
+            <span class="icono-etiqueta"><i class="fa-solid fa-lightbulb"></i></span> Otro
+          </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>
 
-<!-- ==================== EMPRENDIMIENTOS ==================== -->
-<section id="emprendimientos" class="section section-emprendimientos">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-eyebrow">Catálogo</div>
-      <h2 class="section-title">Emprendimientos ESPE</h2>
-      <p class="section-desc">Explora los proyectos innovadores desarrollados por nuestra comunidad universitaria.</p>
+
+<!-- SECCIÓN CATÁLOGO DE EMPRENDIMIENTOS -->
+<section id="emprendimientos" class="seccion seccion-emprendimientos">
+  <div class="contenedor">
+
+    <!--Encabezado del catálogo-->
+    <div class="encabezado-seccion">
+      <div class="subtitulo-eyebrow">Catálogo</div>
+      <h2 class="titulo-seccion">Emprendimientos ESPE</h2>
+      <p class="descripcion-seccion">Explora los proyectos innovadores desarrollados por nuestra comunidad universitaria.</p>
     </div>
 
-    <div class="catalog-controls">
-      <div class="search-box">
-        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <!--Controles de búsqueda y filtrado del catálogo-->
+    <div class="controles-catalogo">
+
+      <!--Campo de búsqueda por nombre o código-->
+      <div class="caja-busqueda">
+        <svg class="icono-busqueda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
         </svg>
-        <input type="text" id="catalogSearch" placeholder="Buscar por nombre o código..." oninput="filterCards()" />
+        <input type="text" id="busquedaCatalogo" placeholder="Buscar por nombre o código..." oninput="filtrarTarjetas()" />
       </div>
-      <select id="catalogFilter" class="filter-select" onchange="filterCards()">
+
+      <!--Filtro por categoría-->
+      <select id="filtroCatalogo" class="selector-filtro" onchange="filtrarTarjetas()">
         <option value="">Todas las categorías</option>
         <option>Tecnología</option>
         <option>Alimentos</option>
@@ -147,7 +220,9 @@
         <option>Salud</option>
         <option>Otro</option>
       </select>
-      <select id="catalogStatus" class="filter-select" onchange="filterCards()">
+
+      <!--Filtro por estado de madurez-->
+      <select id="estadoCatalogo" class="selector-filtro" onchange="filtrarTarjetas()">
         <option value="">Todos los estados</option>
         <option>Idea</option>
         <option>Prototipo</option>
@@ -156,54 +231,72 @@
       </select>
     </div>
 
-    <div id="cardsGrid" class="cards-grid">
-      <!-- Cards dinámicas -->
-    </div>
-    <div id="emptyState" class="empty-state" style="display:none">
-      <div class="empty-icon">&#x1F50D;</div>
+    <!--Cuadrícula donde se insertan las tarjetas dinámicamente desde JS-->
+    <div id="cuadriculaTarjetas" class="cuadricula-tarjetas"></div>
+
+    <!--Mensaje cuando no hay resultados con los filtros aplicados-->
+    <div id="estadoVacio" class="estado-vacio" style="display:none">
+      <div class="icono-vacio icono-etiqueta"><i class="fa-solid fa-magnifying-glass"></i></div>
       <h3>Sin resultados</h3>
       <p>No se encontraron emprendimientos con los filtros aplicados.</p>
-      <button class="btn btn-outline" onclick="clearFilters()">Limpiar filtros</button>
+      <button class="btn btn-contorno" onclick="limpiarFiltros()">Limpiar filtros</button>
     </div>
   </div>
 </section>
 
-<!-- ==================== REGISTRO ==================== -->
-<section id="registro" class="section section-registro">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-eyebrow">Formulario</div>
-      <h2 class="section-title">Registrar Emprendimiento</h2>
-      <p class="section-desc">Completa el formulario para añadir tu proyecto al ecosistema ESPE Emprende.</p>
+
+<!-- SECCIÓN REGISTRO -->
+<section id="registro" class="seccion seccion-registro">
+  <div class="contenedor">
+
+    <!--Encabezado del formulario de registro-->
+    <div class="encabezado-seccion">
+      <div class="subtitulo-eyebrow">Formulario</div>
+      <h2 class="titulo-seccion">Registrar Emprendimiento</h2>
+      <p class="descripcion-seccion">Completa el formulario para añadir tu proyecto al ecosistema ESPE Emprende.</p>
     </div>
 
-    <div class="form-wrapper">
-      <form id="emprendimientoForm" class="emp-form" novalidate>
-        <input type="hidden" id="editId" value="" />
+    <div class="contenedor-formulario">
 
-        <div class="form-grid">
-          <div class="form-group">
-            <label for="codigo">Código <span class="required">*</span></label>
+      <!--Formulario principal de registro / edición-->
+      <form id="formularioEmprendimiento" class="formulario-emp" novalidate>
+
+        <!--Campo oculto para almacenar el ID al editar un registro existente-->
+        <input type="hidden" id="idEdicion" value="" />
+
+        <div class="cuadricula-formulario">
+
+          <!--Campo: Código único del emprendimiento-->
+          <div class="grupo-campo">
+            <label for="codigo">Código <span class="requerido">*</span></label>
             <input type="text" id="codigo" placeholder="Ej: ESPE-2026-001" maxlength="20" />
-            <span class="field-error" id="err-codigo"></span>
+            <span class="error-campo" id="err-codigo"></span>
           </div>
-          <div class="form-group">
-            <label for="nombre">Nombre del Emprendimiento <span class="required">*</span></label>
+
+          <!--Campo: Nombre del emprendimiento-->
+          <div class="grupo-campo">
+            <label for="nombre">Nombre del Emprendimiento <span class="requerido">*</span></label>
             <input type="text" id="nombre" placeholder="Nombre de tu proyecto" />
-            <span class="field-error" id="err-nombre"></span>
+            <span class="error-campo" id="err-nombre"></span>
           </div>
-          <div class="form-group">
-            <label for="responsable">Responsable <span class="required">*</span></label>
+
+          <!--Campo: Nombre del responsable-->
+          <div class="grupo-campo">
+            <label for="responsable">Responsable <span class="requerido">*</span></label>
             <input type="text" id="responsable" placeholder="Nombre del emprendedor" />
-            <span class="field-error" id="err-responsable"></span>
+            <span class="error-campo" id="err-responsable"></span>
           </div>
-          <div class="form-group">
-            <label for="carrera">Carrera / Departamento <span class="required">*</span></label>
+
+          <!--Campo: Carrera o departamento de procedencia-->
+          <div class="grupo-campo">
+            <label for="carrera">Carrera / Departamento <span class="requerido">*</span></label>
             <input type="text" id="carrera" placeholder="Ej: Ingeniería en Sistemas" />
-            <span class="field-error" id="err-carrera"></span>
+            <span class="error-campo" id="err-carrera"></span>
           </div>
-          <div class="form-group">
-            <label for="categoria">Categoría <span class="required">*</span></label>
+
+          <!--Campo: Categoría del emprendimiento-->
+          <div class="grupo-campo">
+            <label for="categoria">Categoría <span class="requerido">*</span></label>
             <select id="categoria">
               <option value="">Seleccionar categoría</option>
               <option>Tecnología</option>
@@ -215,10 +308,12 @@
               <option>Salud</option>
               <option>Otro</option>
             </select>
-            <span class="field-error" id="err-categoria"></span>
+            <span class="error-campo" id="err-categoria"></span>
           </div>
-          <div class="form-group">
-            <label for="estado">Estado <span class="required">*</span></label>
+
+          <!--Campo: Estado actual del emprendimiento-->
+          <div class="grupo-campo">
+            <label for="estado">Estado <span class="requerido">*</span></label>
             <select id="estado">
               <option value="">Seleccionar estado</option>
               <option>Idea</option>
@@ -226,110 +321,143 @@
               <option>En marcha</option>
               <option>En crecimiento</option>
             </select>
-            <span class="field-error" id="err-estado"></span>
+            <span class="error-campo" id="err-estado"></span>
           </div>
-          <div class="form-group form-group-full">
-            <label for="producto">Producto o Servicio <span class="required">*</span></label>
+
+          <!--Campo: Descripción del producto o servicio (ocupa ancho completo)-->
+          <div class="grupo-campo grupo-campo-completo">
+            <label for="producto">Producto o Servicio <span class="requerido">*</span></label>
             <input type="text" id="producto" placeholder="¿Qué ofrece tu emprendimiento?" />
-            <span class="field-error" id="err-producto"></span>
+            <span class="error-campo" id="err-producto"></span>
           </div>
-          <div class="form-group form-group-full">
+
+          <!--Campo: Descripción libre (opcional, ocupa ancho completo)-->
+          <div class="grupo-campo grupo-campo-completo">
             <label for="descripcion">Descripción</label>
             <textarea id="descripcion" rows="3" placeholder="Describe brevemente tu emprendimiento..."></textarea>
           </div>
-          <div class="form-group">
-            <label for="ventas">Ventas Mensuales Estimadas (USD) <span class="required">*</span></label>
+
+          <!--Campo: Ventas mensuales estimadas en USD-->
+          <div class="grupo-campo">
+            <label for="ventas">Ventas Mensuales Estimadas (USD) <span class="requerido">*</span></label>
             <input type="number" id="ventas" placeholder="0.00" min="0" step="0.01" />
-            <span class="field-error" id="err-ventas"></span>
+            <span class="error-campo" id="err-ventas"></span>
           </div>
-          <div class="form-group">
+
+          <!--Campo: URL opcional de imagen representativa-->
+          <div class="grupo-campo">
             <label for="imagen">URL de Imagen (opcional)</label>
             <input type="url" id="imagen" placeholder="https://..." />
           </div>
         </div>
 
-        <div class="form-actions">
-          <button type="button" class="btn btn-ghost" onclick="resetForm()">↺ Restablecer</button>
-          <button type="submit" class="btn btn-primary" id="submitBtn">Registrar Emprendimiento</button>
+        <!--Botones de acción del formulario-->
+        <div class="acciones-formulario">
+          <button type="button" class="btn btn-fantasma" onclick="reiniciarFormulario()">↺ Restablecer</button>
+          <button type="submit" class="btn btn-primario" id="botonEnviar">Registrar Emprendimiento</button>
         </div>
       </form>
 
-      <div id="formSuccess" class="form-success" style="display:none">
-        <div class="success-icon">&#x2705;</div>
+      <!--Mensaje de éxito tras registro exitoso (oculto por defecto)-->
+      <div id="exitoFormulario" class="exito-formulario" style="display:none">
+        <div class="icono-exito icono-etiqueta"><i class="fa-solid fa-circle-check"></i></div>
         <h3>¡Emprendimiento registrado!</h3>
-        <p id="successMsg"></p>
-        <button class="btn btn-primary" onclick="goTo('emprendimientos')">Ver en catálogo</button>
-        <button class="btn btn-outline" onclick="resetForm(); document.getElementById('formSuccess').style.display='none'; document.getElementById('emprendimientoForm').style.display='grid';">Registrar otro</button>
+        <p id="mensajeExito"></p>
+        <button class="btn btn-primario" onclick="irA('emprendimientos')">Ver en catálogo</button>
+        <button class="btn btn-contorno" onclick="reiniciarFormulario(); document.getElementById('exitoFormulario').style.display='none'; document.getElementById('formularioEmprendimiento').style.display='grid';">
+          Registrar otro
+        </button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ==================== DASHBOARD ==================== -->
-<section id="dashboard" class="section section-dashboard">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-eyebrow">Análisis</div>
-      <h2 class="section-title">Dashboard General</h2>
-      <p class="section-desc">Estadísticas y gestión de todos los emprendimientos registrados.</p>
+
+<!-- SECCIÓN PANEL (DASHBOARD) -->
+<section id="panel" class="seccion seccion-panel">
+  <div class="contenedor">
+
+    <!--Encabezado del panel de control-->
+    <div class="encabezado-seccion">
+      <div class="subtitulo-eyebrow">Análisis</div>
+      <h2 class="titulo-seccion">Dashboard General</h2>
+      <p class="descripcion-seccion">Estadísticas y gestión de todos los emprendimientos registrados.</p>
     </div>
 
-    <!-- KPI Cards -->
-    <div class="kpi-grid">
-      <div class="kpi-card kpi-main">
-        <div class="kpi-icon">&#x1F4CA;</div>
-        <div class="kpi-info">
-          <span class="kpi-value" id="kpiTotal">0</span>
-          <span class="kpi-label">Total Emprendimientos</span>
+    <!--Tarjetas KPI con métricas clave-->
+    <div class="cuadricula-kpi">
+
+      <!--KPI: Total de emprendimientos-->
+      <div class="tarjeta-kpi kpi-principal">
+        <div class="icono-kpi icono-etiqueta"><i class="fa-solid fa-chart-column"></i></div>
+        <div class="info-kpi">
+          <span class="valor-kpi" id="kpiTotal">0</span>
+          <span class="etiqueta-kpi">Total Emprendimientos</span>
         </div>
       </div>
-      <div class="kpi-card kpi-green">
-        <div class="kpi-icon">&#x1F4B0;</div>
-        <div class="kpi-info">
-          <span class="kpi-value" id="kpiVentasTotal">$0</span>
-          <span class="kpi-label">Ventas Totales/mes</span>
+
+      <!--KPI: Ventas totales del mes-->
+      <div class="tarjeta-kpi kpi-verde">
+        <div class="icono-kpi icono-etiqueta"><i class="fa-solid fa-dollar-sign"></i></div>
+        <div class="info-kpi">
+          <span class="valor-kpi" id="kpiVentasTotales">$0</span>
+          <span class="etiqueta-kpi">Ventas Totales/mes</span>
         </div>
       </div>
-      <div class="kpi-card kpi-yellow">
-        <div class="kpi-icon">&#x1F4C8;</div>
-        <div class="kpi-info">
-          <span class="kpi-value" id="kpiPromedio">$0</span>
-          <span class="kpi-label">Promedio de Ventas</span>
+
+      <!--KPI: Promedio de ventas por emprendimiento-->
+      <div class="tarjeta-kpi kpi-amarillo">
+        <div class="icono-kpi icono-etiqueta"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="info-kpi">
+          <span class="valor-kpi" id="kpiPromedio">$0</span>
+          <span class="etiqueta-kpi">Promedio de Ventas</span>
         </div>
       </div>
-      <div class="kpi-card kpi-red">
-        <div class="kpi-icon">&#x1F3C6;</div>
-        <div class="kpi-info">
-          <span class="kpi-value" id="kpiTop">—</span>
-          <span class="kpi-label">Mayor Ventas</span>
+
+      <!--KPI: Emprendimiento con mayores ventas-->
+      <div class="tarjeta-kpi kpi-rojo">
+        <div class="icono-kpi icono-etiqueta"><i class="fa-solid fa-trophy"></i></div>
+        <div class="info-kpi">
+          <span class="valor-kpi" id="kpiTop">—</span>
+          <span class="etiqueta-kpi">Mayor Ventas</span>
         </div>
       </div>
     </div>
 
-    <!-- Distribución por categoría -->
-    <div class="charts-row">
-      <div class="chart-card">
-        <h3 class="chart-title">Distribución por Categoría</h3>
-        <div id="catChart" class="bar-chart"></div>
+    <!--Fila de gráficos de barras-->
+    <div class="fila-graficos">
+
+      <!--Gráfico de distribución por categoría-->
+      <div class="tarjeta-grafico">
+        <h3 class="titulo-grafico">Distribución por Categoría</h3>
+        <div id="graficoCategorias" class="grafico-barras"></div>
       </div>
-      <div class="chart-card">
-        <h3 class="chart-title">Distribución por Estado</h3>
-        <div id="statusChart" class="bar-chart"></div>
+
+      <!--Gráfico de distribución por estado-->
+      <div class="tarjeta-grafico">
+        <h3 class="titulo-grafico">Distribución por Estado</h3>
+        <div id="graficoEstados" class="grafico-barras"></div>
       </div>
     </div>
 
-    <!-- Tabla dinámica -->
-    <div class="table-card">
-      <div class="table-header">
+    <!--Tabla de registros con búsqueda y filtro-->
+    <div class="tarjeta-tabla">
+
+      <!--Encabezado de la tabla con controles-->
+      <div class="encabezado-tabla">
         <h3>Registros</h3>
-        <div class="table-controls">
-          <div class="search-box">
-            <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="controles-tabla">
+
+          <!--Búsqueda dentro de la tabla-->
+          <div class="caja-busqueda">
+            <svg class="icono-busqueda" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
             </svg>
-            <input type="text" id="tableSearch" placeholder="Buscar..." oninput="filterTable()" />
+            <input type="text" id="busquedaTabla" placeholder="Buscar..." oninput="filtrarTabla()" />
           </div>
-          <select id="tableFilterCat" class="filter-select" onchange="filterTable()">
+
+          <!--Filtro por categoría en la tabla-->
+          <select id="filtroCategoriaTabla" class="selector-filtro" onchange="filtrarTabla()">
             <option value="">Todas las categorías</option>
             <option>Tecnología</option><option>Alimentos</option><option>Servicios</option>
             <option>Educación</option><option>Ambiente</option><option>Artesanías</option>
@@ -338,8 +466,9 @@
         </div>
       </div>
 
-      <div class="table-responsive">
-        <table class="data-table" id="dataTable">
+      <!--Tabla responsiva de datos-->
+      <div class="tabla-responsiva">
+        <table class="tabla-datos" id="tablaRegistros">
           <thead>
             <tr>
               <th>Código</th>
@@ -352,73 +481,91 @@
               <th>Acciones</th>
             </tr>
           </thead>
-          <tbody id="tableBody">
-            <!-- Filas dinámicas -->
+          <tbody id="cuerpoTabla">
+            <!--Las filas se generan dinámicamente desde JS-->
           </tbody>
         </table>
-        <div id="tableEmpty" class="table-empty" style="display:none">
+
+        <!--Mensaje cuando la tabla no tiene datos-->
+        <div id="tablaVacia" class="tabla-vacia" style="display:none">
           <p>No hay emprendimientos registrados aún.</p>
-          <button class="btn btn-primary" onclick="goTo('registro')">Registrar el primero</button>
+          <button class="btn btn-primario" onclick="irA('registro')">Registrar el primero</button>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ==================== CONTACTO ==================== -->
-<section id="contacto" class="section section-contacto">
-  <div class="container">
-    <div class="section-header">
-      <div class="section-eyebrow">Contacto</div>
-      <h2 class="section-title">¿Tienes alguna consulta?</h2>
-      <p class="section-desc">Escríbenos y el equipo de ESPE Emprende te responderá a la brevedad.</p>
+
+<!-- SECCIÓN CONTACTO -->
+<section id="contacto" class="seccion seccion-contacto">
+  <div class="contenedor">
+
+    <!--Encabezado de la sección de contacto-->
+    <div class="encabezado-seccion">
+      <div class="subtitulo-eyebrow">Contacto</div>
+      <h2 class="titulo-seccion">¿Tienes alguna consulta?</h2>
+      <p class="descripcion-seccion">Escríbenos y el equipo de ESPE Emprende te responderá a la brevedad.</p>
     </div>
 
-    <div class="contact-layout">
-      <!-- Info institucional -->
-      <div class="contact-info">
-        <div class="info-card">
+    <div class="disposicion-contacto">
+
+      <!--Bloque de información institucional-->
+      <div class="info-contacto">
+        <div class="tarjeta-info">
           <h3>Información Institucional</h3>
-          <ul class="info-list">
+          <ul class="lista-info">
+
+            <!--Dirección-->
             <li>
-              <div class="info-icon">&#x1F3DB;&#xFE0F;</div>
+              <div class="icono-info icono-etiqueta"><i class="fa-solid fa-building-columns"></i></div>
               <div>
                 <strong>Universidad de las Fuerzas Armadas ESPE</strong>
                 <span>Sede Sangolquí – Av. General Rumiñahui s/n</span>
               </div>
             </li>
+
+            <!--Ubicación-->
             <li>
-              <div class="info-icon">&#x1F4CD;</div>
+              <div class="icono-info icono-etiqueta"><i class="fa-solid fa-location-dot"></i></div>
               <div>
                 <strong>Ubicación</strong>
                 <span>Sangolquí, Pichincha, Ecuador</span>
               </div>
             </li>
+
+            <!--Teléfono-->
             <li>
-              <div class="info-icon">&#x1F4DE;</div>
+              <div class="icono-info icono-etiqueta"><i class="fa-solid fa-phone"></i></div>
               <div>
                 <strong>Teléfono</strong>
                 <span>+593 2 398-9400</span>
               </div>
             </li>
+
+            <!--Correo electrónico-->
             <li>
-              <div class="info-icon">&#x1F4E7;</div>
+              <div class="icono-info icono-etiqueta"><i class="fa-solid fa-envelope"></i></div>
               <div>
                 <strong>Correo</strong>
                 <span>emprendimiento@espe.edu.ec</span>
               </div>
             </li>
+
+            <!--Sitio web-->
             <li>
-              <div class="info-icon">&#x1F310;</div>
+              <div class="icono-info icono-etiqueta"><i class="fa-solid fa-globe"></i></div>
               <div>
                 <strong>Sitio Web</strong>
                 <span>www.espe.edu.ec</span>
               </div>
             </li>
           </ul>
-          <div class="office-hours">
+
+          <!--Horario de atención-->
+          <div class="horario-atencion">
             <h4>Horario de Atención</h4>
-            <div class="hours-grid">
+            <div class="cuadricula-horario">
               <span>Lunes a Viernes</span><span>08:00 – 17:00</span>
               <span>Sábados</span><span>09:00 – 13:00</span>
             </div>
@@ -426,21 +573,27 @@
         </div>
       </div>
 
-      <!-- Formulario de contacto -->
-      <div class="contact-form-wrapper">
-        <form id="contactForm" class="contact-form" novalidate>
-          <div class="form-group">
-            <label for="cNombre">Nombre completo <span class="required">*</span></label>
+      <!--Formulario de contacto-->
+      <div class="contenedor-formulario-contacto">
+        <form id="formularioContacto" class="formulario-contacto" novalidate>
+
+          <!--Campo: Nombre completo-->
+          <div class="grupo-campo">
+            <label for="cNombre">Nombre completo <span class="requerido">*</span></label>
             <input type="text" id="cNombre" placeholder="Tu nombre" />
-            <span class="field-error" id="cerr-nombre"></span>
+            <span class="error-campo" id="cerr-nombre"></span>
           </div>
-          <div class="form-group">
-            <label for="cEmail">Correo electrónico <span class="required">*</span></label>
-            <input type="email" id="cEmail" placeholder="correo@ejemplo.com" />
-            <span class="field-error" id="cerr-email"></span>
+
+          <!--Campo: Correo electrónico-->
+          <div class="grupo-campo">
+            <label for="cCorreo">Correo electrónico <span class="requerido">*</span></label>
+            <input type="email" id="cCorreo" placeholder="correo@ejemplo.com" />
+            <span class="error-campo" id="cerr-correo"></span>
           </div>
-          <div class="form-group">
-            <label for="cAsunto">Asunto <span class="required">*</span></label>
+
+          <!--Campo: Asunto del mensaje-->
+          <div class="grupo-campo">
+            <label for="cAsunto">Asunto <span class="requerido">*</span></label>
             <select id="cAsunto">
               <option value="">Seleccionar asunto</option>
               <option>Información sobre registro</option>
@@ -448,65 +601,77 @@
               <option>Vinculación con mentores</option>
               <option>Otro</option>
             </select>
-            <span class="field-error" id="cerr-asunto"></span>
+            <span class="error-campo" id="cerr-asunto"></span>
           </div>
-          <div class="form-group">
-            <label for="cMensaje">Mensaje <span class="required">*</span></label>
+
+          <!--Campo: Cuerpo del mensaje-->
+          <div class="grupo-campo">
+            <label for="cMensaje">Mensaje <span class="requerido">*</span></label>
             <textarea id="cMensaje" rows="5" placeholder="Escribe tu consulta..."></textarea>
-            <span class="field-error" id="cerr-mensaje"></span>
+            <span class="error-campo" id="cerr-mensaje"></span>
           </div>
-          <button type="submit" class="btn btn-primary btn-full">Enviar Mensaje</button>
+
+          <button type="submit" class="btn btn-primario btn-completo">Enviar Mensaje</button>
         </form>
-        <div id="contactSuccess" class="form-success" style="display:none">
-          <div class="success-icon">&#x1F4EC;</div>
+
+        <!--Mensaje de éxito al enviar el formulario de contacto-->
+        <div id="exitoContacto" class="exito-formulario" style="display:none">
+          <div class="icono-exito icono-etiqueta"><i class="fa-solid fa-paper-plane"></i></div>
           <h3>¡Mensaje enviado!</h3>
           <p>Gracias por contactarnos. Te responderemos en menos de 48 horas hábiles.</p>
-          <button class="btn btn-outline" onclick="document.getElementById('contactSuccess').style.display='none'; document.getElementById('contactForm').style.display='flex'; document.getElementById('contactForm').reset();">Enviar otro</button>
+          <button class="btn btn-contorno" onclick="document.getElementById('exitoContacto').style.display='none'; document.getElementById('formularioContacto').style.display='flex'; document.getElementById('formularioContacto').reset();">
+            Enviar otro
+          </button>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ==================== FOOTER ==================== -->
-<footer class="footer">
-  <div class="container">
-    <div class="footer-grid">
-      <div class="footer-brand">
-        <div class="nav-brand">
-          <div class="brand-logo">
-            <svg width="32" height="32" viewBox="0 0 36 36" fill="none">
-              <rect width="36" height="36" rx="8" fill="#00783F"/>
-              <path d="M8 18L18 8L28 18L18 28L8 18Z" fill="#F2C300" opacity="0.9"/>
-              <circle cx="18" cy="18" r="4" fill="white"/>
-            </svg>
+
+<!-- PIE DE PÁGINA -->
+<footer class="pie-pagina">
+  <div class="contenedor">
+    <div class="cuadricula-pie">
+
+      <!--Columna de marca e identidad-->
+      <div class="marca-pie">
+        <div class="marca-nav">
+          <div class="logo-marca">
+            <img src="./imagenes/logo.png" alt="Logo ESPE" class="logo-pie" />
           </div>
-          <div class="brand-text">
-            <span class="brand-title" style="color:white">ESPE Emprende</span>
-            <span class="brand-sub" style="color:rgba(255,255,255,0.6)">Portal de Emprendimientos</span>
+          <div class="texto-marca">
+            <span class="titulo-marca" style="color:white">ESPE Emprende</span>
+            <span class="subtitulo-marca" style="color:rgba(255,255,255,0.6)">Portal de Emprendimientos</span>
           </div>
         </div>
-        <p class="footer-desc">Potenciando el talento universitario ecuatoriano a través de la innovación y el emprendimiento.</p>
+        <p class="descripcion-pie">Potenciando el talento universitario ecuatoriano a través de la innovación y el emprendimiento.</p>
       </div>
-      <div class="footer-col">
+
+      <!--Columna de navegación rápida-->
+      <div class="columna-pie">
         <h4>Navegación</h4>
         <ul>
-          <li><a onclick="goTo('inicio')">Inicio</a></li>
-          <li><a onclick="goTo('emprendimientos')">Emprendimientos</a></li>
-          <li><a onclick="goTo('registro')">Registrar</a></li>
-          <li><a onclick="goTo('dashboard')">Dashboard</a></li>
+          <li><a onclick="irA('inicio')">Inicio</a></li>
+          <li><a onclick="irA('emprendimientos')">Emprendimientos</a></li>
+          <li><a onclick="irA('registro')">Registrar</a></li>
+          <li><a onclick="irA('panel')">Dashboard</a></li>
         </ul>
       </div>
-      <div class="footer-col">
+
+      <!--Columna de categorías destacadas-->
+      <div class="columna-pie">
         <h4>Categorías</h4>
         <ul>
-          <li><a onclick="filterAndGo('Tecnología')">Tecnología</a></li>
-          <li><a onclick="filterAndGo('Alimentos')">Alimentos</a></li>
-          <li><a onclick="filterAndGo('Salud')">Salud</a></li>
-          <li><a onclick="filterAndGo('Educación')">Educación</a></li>
+          <li><a onclick="filtrarYNavegar('Tecnología')">Tecnología</a></li>
+          <li><a onclick="filtrarYNavegar('Alimentos')">Alimentos</a></li>
+          <li><a onclick="filtrarYNavegar('Salud')">Salud</a></li>
+          <li><a onclick="filtrarYNavegar('Educación')">Educación</a></li>
         </ul>
       </div>
-      <div class="footer-col">
+
+      <!--Columna de contacto rápido-->
+      <div class="columna-pie">
         <h4>Contacto</h4>
         <ul>
           <li><a>emprendimiento@espe.edu.ec</a></li>
@@ -515,29 +680,36 @@
         </ul>
       </div>
     </div>
-    <div class="footer-bottom">
+
+    <!--Franja inferior del pie de página-->
+    <div class="franja-pie">
       <p>© 2026 Universidad de las Fuerzas Armadas ESPE. Portal académico de emprendimientos.</p>
-      <p>Datos de LocalStorage activos <span class="ls-badge"> LS</span></p>
+      <p>Datos de LocalStorage activos <span class="insignia-ls">LS</span></p>
     </div>
   </div>
 </footer>
 
-<!-- Modal de confirmación eliminación -->
-<div id="deleteModal" class="modal-overlay" style="display:none">
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<!--Capa oscura de fondo (overlay), oculta por defecto-->
+<div id="modalEliminar" class="capa-modal" style="display:none">
   <div class="modal">
-    <div class="modal-icon">&#x1F5D1;&#xFE0F;</div>
+    <div class="icono-modal icono-etiqueta"><i class="fa-solid fa-trash-can"></i></div>
     <h3>¿Eliminar emprendimiento?</h3>
-    <p id="deleteMsg">Esta acción no se puede deshacer.</p>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal()">Cancelar</button>
-      <button class="btn btn-danger" id="confirmDelete">Eliminar</button>
+    <p id="mensajeEliminar">Esta acción no se puede deshacer.</p>
+    <div class="acciones-modal">
+      <button class="btn btn-fantasma" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn btn-peligro" id="confirmarEliminar">Eliminar</button>
     </div>
   </div>
 </div>
 
-<!-- Toast -->
-<div id="toast" class="toast"></div>
 
+<!-- AVISO FLOTANTE (TOAST) -->
+<!--Notificación temporal en la esquina inferior derecha-->
+<div id="aviso" class="aviso"></div>
+
+<!--Script principal de la aplicación-->
 <script src="app.js"></script>
 </body>
 </html>
