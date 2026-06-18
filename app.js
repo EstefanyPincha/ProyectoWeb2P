@@ -18,7 +18,7 @@ const SAMPLE_DATA = [
     descripcion: 'Sensores inteligentes conectados a la nube que analizan humedad, temperatura y luminosidad en tiempo real para optimizar la producción agrícola.',
     ventas: 1850,
     estado: 'En crecimiento',
-    imagen: ''
+    imagen: './imagenes/Agrotech.jpg'
   },
   {
     id: 'EMP-002',
@@ -31,7 +31,7 @@ const SAMPLE_DATA = [
     descripcion: 'Cajas semanales con ingredientes frescos y recetas balanceadas diseñadas por nutricionistas de la ESPE.',
     ventas: 980,
     estado: 'En marcha',
-    imagen: ''
+    imagen: './imagenes/nutriKitchen.png'
   },
   {
     id: 'EMP-003',
@@ -44,7 +44,7 @@ const SAMPLE_DATA = [
     descripcion: 'Asistente educativo basado en inteligencia artificial que personaliza el aprendizaje para estudiantes de bachillerato.',
     ventas: 2400,
     estado: 'En crecimiento',
-    imagen: ''
+    imagen: './imagenes/edubot.jpg'
   },
   {
     id: 'EMP-004',
@@ -57,7 +57,7 @@ const SAMPLE_DATA = [
     descripcion: 'Recolectamos residuos orgánicos domiciliarios y los transformamos en compost certificado para uso agrícola.',
     ventas: 620,
     estado: 'En marcha',
-    imagen: ''
+    imagen: './imagenes/ecosolucion.jpg'
   },
   {
     id: 'EMP-005',
@@ -70,7 +70,7 @@ const SAMPLE_DATA = [
     descripcion: 'Colecciones de joyería que fusionan técnicas ancestrales andinas con diseño moderno usando metales reciclados.',
     ventas: 430,
     estado: 'Prototipo',
-    imagen: ''
+    imagen: './imagenes/arteandino.jpg'
   },
   {
     id: 'EMP-006',
@@ -83,7 +83,7 @@ const SAMPLE_DATA = [
     descripcion: 'Dispositivo wearable que mide frecuencia cardíaca, presión arterial y detecta caídas, enviando alertas automáticas a familiares.',
     ventas: 3100,
     estado: 'En crecimiento',
-    imagen: ''
+    imagen: './imagenes/medialert.jpg'
   },
   {
     id: 'EMP-007',
@@ -96,7 +96,7 @@ const SAMPLE_DATA = [
     descripcion: 'Servicio de limpieza con personal capacitado, productos ecológicos y sistema de reserva en línea.',
     ventas: 740,
     estado: 'En marcha',
-    imagen: ''
+    imagen: './imagenes/serviLimpio.jpg'
   },
   {
     id: 'EMP-008',
@@ -109,7 +109,7 @@ const SAMPLE_DATA = [
     descripcion: 'Soluciones tecnológicas personalizadas para pequeñas y medianas empresas: sistemas de gestión, e-commerce y apps móviles.',
     ventas: 4200,
     estado: 'En crecimiento',
-    imagen: ''
+    imagen: './imagenes/QuantumCode.jpg'
   }
 ];
 
@@ -119,77 +119,197 @@ let emprendimientos = [];
 let deleteTargetId = null;
 
 /* ---------- UTILIDADES ---------- */
-const $ = id => document.getElementById(id);
-const uid = () => 'EMP-' + Date.now();
-const fmt = n => '$' + Number(n).toLocaleString('es-EC', { minimumFractionDigits: 0 });
-const emojiFor = cat => ({
-  Tecnología: '💻', Alimentos: '🍎', Servicios: '🛠️',
-  Educación: '📚', Ambiente: '🌱', Artesanías: '🎨',
-  Salud: '❤️', Otro: '✨'
-}[cat] || '📌');
+function $(id) {
+    return document.getElementById(id);
+}
+
+function fmt(value) {
+    return new Intl.NumberFormat("es-EC", {
+        style: "currency",
+        currency: "USD",
+        maximumFractionDigits: 0
+    }).format(Number(value) || 0);
+}
+
+function uid() {
+    return "EMP-" + Date.now().toString(36).toUpperCase();
+}
+
+function emojiFor(cat) {
+
+    switch (cat) {
+        case "Tecnología":
+            return "&#x1F4BB;";
+
+        case "Alimentos":
+            return "&#x1F34E;";
+
+        case "Servicios":
+            return "&#x1F6E0;&#xFE0F;";
+
+        case "Educación":
+            return "&#x1F4DA;";
+
+        case "Ambiente":
+            return "&#x1F331;";
+
+        case "Artesanías":
+            return "&#x1F3A8;";
+
+        case "Salud":
+            return "&#x2764;&#xFE0F;";
+
+        case "Otro":
+            return "&#x2728;";
+
+        default:
+            return "&#x1F4CC;";
+    }
+}
 
 /* ---------- LOCALSTORAGE ---------- */
 function saveLS() {
-  localStorage.setItem(LS_KEY, JSON.stringify(emprendimientos));
+    localStorage.setItem(LS_KEY, JSON.stringify(emprendimientos));
 }
+
 function loadLS() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (raw) {
-      emprendimientos = JSON.parse(raw);
-    } else {
-      emprendimientos = [...SAMPLE_DATA];
-      saveLS();
+
+    try {
+
+        const raw = localStorage.getItem(LS_KEY);
+
+        if (raw != null) {
+            emprendimientos = JSON.parse(raw);
+            syncSampleImages();
+        } else {
+            emprendimientos = SAMPLE_DATA.slice();
+            saveLS();
+        }
+
+    } catch (error) {
+
+        emprendimientos = SAMPLE_DATA.slice();
+        saveLS();
+
     }
-  } catch {
-    emprendimientos = [...SAMPLE_DATA];
-    saveLS();
-  }
+
+}
+
+function syncSampleImages() {
+    let changed = false;
+
+    emprendimientos = emprendimientos.map(function(emp) {
+        const sample = SAMPLE_DATA.find(function(item) {
+            return item.id === emp.id;
+        });
+
+        if (sample && !emp.imagen) {
+            changed = true;
+            return { ...emp, imagen: sample.imagen };
+        }
+
+        return emp;
+    });
+
+    if (changed) {
+        saveLS();
+    }
 }
 
 /* ---------- TOAST ---------- */
 let toastTimer;
-function showToast(msg, type = 'success') {
-  const t = $('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => {
-    t.className = 'toast';
-  }, 3200);
+
+function showToast(msg, type) {
+
+    if (type == null) {
+        type = "success";
+    }
+
+    let t = document.getElementById("toast");
+
+    t.textContent = msg;
+    t.className = "toast show " + type;
+
+    clearTimeout(toastTimer);
+
+    toastTimer = setTimeout(function () {
+        t.className = "toast";
+    }, 3200);
+
 }
 
 /* ---------- NAVEGACIÓN ---------- */
+
 function goTo(sectionId) {
-  // Ocultar todas
-  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-  // Mostrar target
-  const sec = document.getElementById(sectionId);
-  if (sec) sec.classList.add('active');
-  const link = document.querySelector(`.nav-link[data-section="${sectionId}"]`);
-  if (link) link.classList.add('active');
-  // Cerrar menú móvil
-  $('navLinks').classList.remove('open');
-  // Scroll top
-  window.scrollTo({ top: 0, behavior: 'smooth' });
-  // Renderizar según sección
-  if (sectionId === 'emprendimientos') renderCards(emprendimientos);
-  if (sectionId === 'dashboard') renderDashboard();
-  if (sectionId === 'inicio') updateHeroStats();
+
+    let sections = document.querySelectorAll(".section");
+
+    sections.forEach(function(section) {
+        section.classList.remove("active");
+    });
+
+    let links = document.querySelectorAll(".nav-link");
+
+    links.forEach(function(link) {
+        link.classList.remove("active");
+    });
+
+    let sec = document.getElementById(sectionId);
+
+    if (sec != null) {
+        sec.classList.add("active");
+    }
+
+    let navLinks = document.querySelectorAll(".nav-link");
+
+    navLinks.forEach(function(link) {
+
+        if (link.getAttribute("data-section") == sectionId) {
+            link.classList.add("active");
+        }
+
+    });
+
+    document.getElementById("navLinks").classList.remove("open");
+
+    window.scrollTo(0, 0);
+
+    if (sectionId == "emprendimientos") {
+        renderCards(emprendimientos);
+    }
+
+    if (sectionId == "dashboard") {
+        renderDashboard();
+    }
+
+    if (sectionId == "inicio") {
+        updateHeroStats();
+    }
+
 }
 
 function filterAndGo(categoria) {
-  goTo('emprendimientos');
-  $('catalogFilter').value = categoria;
-  filterCards();
-}
 
+    goTo("emprendimientos");
+
+    document.getElementById("catalogFilter").value = categoria;
+
+    filterCards();
+
+}
 /* ---------- HERO STATS ---------- */
 function updateHeroStats() {
-  $('statTotal').textContent = emprendimientos.length;
-  const total = emprendimientos.reduce((s, e) => s + Number(e.ventas), 0);
-  $('statVentas').textContent = fmt(total);
+
+    document.getElementById("statTotal").textContent = emprendimientos.length;
+
+    let total = 0;
+
+    emprendimientos.forEach(function(emp) {
+        total = total + Number(emp.ventas);
+    });
+
+    document.getElementById("statVentas").textContent = fmt(total);
+
 }
 
 /* ---------- CARDS – CATÁLOGO ---------- */
@@ -217,7 +337,7 @@ function renderCards(list) {
           <span class="status-pill status-${e.estado}">${e.estado}</span>
         </div>
         <h3 class="card-title">${escHtml(e.nombre)}</h3>
-        <p class="card-subtitle">👤 ${escHtml(e.responsable)} · ${escHtml(e.carrera)}</p>
+        <p class="card-subtitle">&#x1F464; ${escHtml(e.responsable)} · ${escHtml(e.carrera)}</p>
         <p class="card-desc">${escHtml(e.descripcion || e.producto)}</p>
         <div class="card-footer">
           <div>
@@ -225,8 +345,8 @@ function renderCards(list) {
             <span class="card-sales">${fmt(e.ventas)}</span>
           </div>
           <div class="card-actions">
-            <button class="btn-icon" title="Editar" onclick="editEmp('${e.id}')">✏️</button>
-            <button class="btn-icon del" title="Eliminar" onclick="confirmDelete('${e.id}')">🗑️</button>
+            <button class="btn-icon" title="Editar" onclick="editEmp('${e.id}')">&#x270F;&#xFE0F;</button>
+            <button class="btn-icon del" title="Eliminar" onclick="confirmDelete('${e.id}')">&#x1F5D1;&#xFE0F;</button>
           </div>
         </div>
       </div>
@@ -324,7 +444,7 @@ $('emprendimientoForm').addEventListener('submit', function(e) {
     if (idx !== -1) {
       emprendimientos[idx] = { ...emprendimientos[idx], ...empData };
       saveLS();
-      showToast('✅ Emprendimiento actualizado correctamente', 'success');
+      showToast('\u{2705} Emprendimiento actualizado correctamente', 'success');
     }
     resetForm();
     goTo('dashboard');
@@ -338,7 +458,7 @@ $('emprendimientoForm').addEventListener('submit', function(e) {
     $('emprendimientoForm').style.display = 'none';
     $('successMsg').textContent = `"${nuevo.nombre}" ha sido añadido al catálogo ESPE Emprende.`;
     $('formSuccess').style.display = 'block';
-    showToast('🚀 Emprendimiento registrado exitosamente', 'success');
+    showToast('\u{1F680} Emprendimiento registrado exitosamente', 'success');
   }
 });
 
@@ -362,8 +482,8 @@ function editEmp(id) {
   $('descripcion').value = emp.descripcion || '';
   $('ventas').value = emp.ventas;
   $('imagen').value = emp.imagen || '';
-  $('submitBtn').textContent = '💾 Guardar Cambios';
-  showToast('✏️ Editando: ' + emp.nombre, 'info');
+  $('submitBtn').textContent = '\u{1F4BE} Guardar Cambios';
+  showToast('\u{270F}\u{FE0F} Editando: ' + emp.nombre, 'info');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -391,7 +511,7 @@ $('confirmDelete').addEventListener('click', function() {
   if (active && active.id === 'emprendimientos') filterCards();
   if (active && active.id === 'dashboard') renderDashboard();
   updateHeroStats();
-  showToast(`🗑️ "${emp ? emp.nombre : ''}" eliminado`, 'error');
+  showToast(`\u{1F5D1}\u{FE0F} "${emp ? emp.nombre : ''}" eliminado`, 'error');
 });
 
 // Cerrar modal al click fuera
@@ -421,8 +541,8 @@ function renderTable(list) {
       <td class="sales-cell">${fmt(e.ventas)}</td>
       <td>
         <div style="display:flex;gap:.35rem">
-          <button class="btn-icon" title="Editar" onclick="editEmp('${e.id}')">✏️</button>
-          <button class="btn-icon del" title="Eliminar" onclick="confirmDelete('${e.id}')">🗑️</button>
+          <button class="btn-icon" title="Editar" onclick="editEmp('${e.id}')">&#x270F;&#xFE0F;</button>
+          <button class="btn-icon del" title="Eliminar" onclick="confirmDelete('${e.id}')">&#x1F5D1;&#xFE0F;</button>
         </div>
       </td>
     `;
@@ -475,7 +595,7 @@ function renderCategoryChart() {
 
 function renderStatusChart() {
   const statuses = ['Idea','Prototipo','En marcha','En crecimiento'];
-  const colors = ['#f97316','#3a7bd5','#22c55e','#a855f7'];
+  const colors = ['#F2C300','#003A70','#00783F','#D32F2F'];
   const counts = statuses.map(s => emprendimientos.filter(e => e.estado === s).length);
   const max = Math.max(...counts, 1);
   const container = $('statusChart');
@@ -523,7 +643,7 @@ $('contactForm').addEventListener('submit', function(e) {
   // Simular envío
   $('contactForm').style.display = 'none';
   $('contactSuccess').style.display = 'block';
-  showToast('📬 Mensaje enviado correctamente', 'success');
+  showToast('\u{1F4EC} Mensaje enviado correctamente', 'success');
 });
 
 /* ---------- NAVBAR COMPORTAMIENTO ---------- */
