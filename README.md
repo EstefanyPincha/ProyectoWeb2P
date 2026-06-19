@@ -32,18 +32,18 @@ Donde:
 Con el contenedor ejecutándose en segundo plano, podemos acceder al sitio web desde el navegador mediante la siguiente dirección:  
 <http://localhost:8080>  
 
-***4. Descargar la imagen desde Docker Hub:***  
-Primer para descargar la imagen debemos publicarla en Docker Hub, esto lo hacemos con el comando:   
+***4. Publicar la imagen desde Docker Hub:***  
+Primero debemos publicar la imagen en Docker Hub, esto lo hacemos con el comando:   
 `docker tag proyectoweb2p-nginx jonasdz2002/proyectoweb2p-nginx`  
 El cual nos ayuda a darle un nombre en nuestro repositorio.  
 
 Posterior a eso la publicamos con:  
 `docker push jonasdz2002/proyectoweb2p-nginx`  
 
-Para descargar la imagen desde Docker Hub utilizamos  
+***5. Para descargar la imagen desde Docker Hub utilizamos***  
 `docker pull jonasdz2002/proyectoweb2p-nginx`  
 
-***5. Ejecutar la imagen descargada:***  
+***6. Ejecutar la imagen descargada:***  
 Una vez descargada la imagen, la ejecutaremos como si nosotros la hubiesemos creado, pero ahora nombrando el usuario y el nombre de la imagen  
 `docker run -d -p 8080:80 jonasdz2002/proyectoweb2p-nginx`  
 
