@@ -48,6 +48,6 @@ Una vez descargada la imagen, la ejecutaremos como si nosotros la hubiesemos cre
 `docker run -d -p 8080:80 jonasdz2002/proyectoweb2p-nginx`  
 
 ***
-[Link a la imagen en Docker](https://hub.docker.com/repository/docker/jonasdz2002/proyectoweb2p/general)
+[Link a la imagen en Docker](https://hub.docker.com/r/jonasdz2002/proyectoweb2p-nginx)
 ***
 
