@@ -603,7 +603,7 @@ function editarEmprendimiento(id) {
   obtenerElemento('imagen').value       = emp.imagen || '';
 
   /* Cambia el texto del botón para indicar modo edición */
-  obtenerElemento('botonEnviar').textContent = '💾 Guardar Cambios';
+  obtenerElemento('botonEnviar').textContent = 'Guardar Cambios';
 
   mostrarAviso('✏️ Editando: ' + emp.nombre, 'info');
   window.scrollTo({ top: 0, behavior: 'smooth' });

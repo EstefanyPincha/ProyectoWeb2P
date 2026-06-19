@@ -851,10 +851,18 @@ ul { list-style: none; }
   border-radius: var(--radio-xl);
   padding: 2.5rem;
   box-shadow: var(--sombra-md);
+  overflow: hidden;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 /* Grupo de campo individual (label + input + error) */
-.grupo-campo { display: flex; flex-direction: column; gap: .35rem; }
+.grupo-campo { 
+  display: flex;
+  flex-direction: column;
+  gap: .35rem; 
+  min-width: 0;
+}
 
 /* Campo que ocupa las dos columnas de la cuadrícula */
 .grupo-campo-completo { grid-column: 1 / -1; }
